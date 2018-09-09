@@ -2,6 +2,7 @@ import numpy
 from numpy import genfromtxt
 from numpy import arange
 import time
+import os
 #import sys
 #import winsound
 import scipy
@@ -151,6 +152,17 @@ def MatthewsCoefficient(perf_table):
     M = (tp*tn - (fp*fn))/numpy.sqrt((tp+fp)*(tp+fn)*(tn+fp)*(tn+fn))
     return M
 
+  
+print(1,os.path.isfile('./aprendizado/aprendizado_fm.csv'))
+print(2,os.path.isfile('./teste/teste_fm.csv'))
+print(3,os.path.isfile('sauro/datasets/antigohistoricoresposta/aprendizado/aprendizado_fm.csv'))
+print(4,os.path.isfile('sauro/datasets/antigohistoricoresposta/teste/teste_fm.csv'))
+print(5,os.path.isfile('sauro/datasets/antigohistoricoresposta/1/aprendizado/aprendizado_fm.csv'))
+print(6,os.path.isfile('sauro/datasets/antigohistoricoresposta/1/teste/teste_fm.csv'))
+print(7,os.path.isfile('sauro/datasets/aprendizado/aprendizado_fm.csv'))
+print(8,os.path.isfile('sauro/datasets/teste/teste_fm.csv'))
+    
+    
 aprendizado_fm = genfromtxt('sauro/datasets/antigohistoricoresposta/1/aprendizado_fm.csv', delimiter='\t', names=True)
 teste_fm = genfromtxt('sauro/datasets/antigohistoricoresposta/1/teste_fm.csv', delimiter='\t', names=True)
 
