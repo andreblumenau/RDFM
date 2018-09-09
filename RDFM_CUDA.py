@@ -1,6 +1,7 @@
 import numpy
 from numpy import genfromtxt
 from numpy import arange
+import cupy
 import time
 #import sys
 #import winsound
@@ -9,7 +10,7 @@ from scipy import special
     
 def train(pTrainX, pTrainY, iterations, alpha, regularization, factors,w):
 
-    alpha = numpy.array([alpha])    
+    alpha = cupy.array([alpha])    
     w = sgd_subset(pTrainX, pTrainY,iterations, alpha, regularization,w)
 
     return w
@@ -18,38 +19,39 @@ def sgd_subset(train_X, train_Y, iterations, alpha, regularization,weight_matrix
     N = train_X.shape[0]#N = 6928 & 6928/866=8
     M = weight_matrix.shape[1]
     
-    tensor_of_x_features = numpy.tile(0.0,(N,1,trainX.shape[1]))
-    tensor_of_x_squared = numpy.tile(0.0,(N,trainX.shape[1],trainX.shape[1]))
+    tensor_of_x_features = cupy.tile(0.0,(N,1,trainX.shape[1]))
+    tensor_of_x_squared = cupy.tile(0.0,(N,trainX.shape[1],trainX.shape[1]))
 
-    matrix_set_diag_to_zero = numpy.tile(1.0,(trainX.shape[1],trainX.shape[1]))
+    matrix_set_diag_to_zero = cupy.tile(1.0,(trainX.shape[1],trainX.shape[1]))
     numpy.fill_diagonal(matrix_set_diag_to_zero,0.0)
     for i in range(N):
         tensor_of_x_features[i]=train_X[i]
         tensor_of_x_squared[i]=train_X[i].dot(train_X[i])
 
-    historical_gradient=numpy.tile(0.0,(weight_matrix.shape))
+    historical_gradient=cupy.tile(0.0,(weight_matrix.shape))
     tensor_of_x_squared = tensor_of_x_squared*matrix_set_diag_to_zero
     tensor_of_x_features_squared = tensor_of_x_features*tensor_of_x_features
     
-    tensor_of_proto_vx = numpy.tile(0.0,(N,1,M))
-    tensor_of_proto_square = numpy.tile(0.0,(N,1,M))
-    vector_of_prediction = numpy.tile(0.0,N)
-    vector_of_sum = numpy.tile(1.0,(M,1))
-    vector_of_gradient = numpy.tile(0.0,N)
+    tensor_of_proto_vx = cupy.tile(0.0,(N,1,M))
+    tensor_of_proto_square = cupy.tile(0.0,(N,1,M))
+    vector_of_prediction = cupy.tile(0.0,N)
+    vector_of_sum = cupy.tile(1.0,(M,1))
+    vector_of_gradient = cupy.tile(0.0,N)
     
-    weight_matrix_square = numpy.tile(0.0,(weight_matrix.shape))
-    update_step = numpy.tile(0.0,(weight_matrix.shape))
+    weight_matrix_square = cupy.tile(0.0,(weight_matrix.shape))
+    update_step = cupy.tile(0.0,(weight_matrix.shape))
 
     splits = 9
-    taker = numpy.floor(N/splits).astype(numpy.int32)
+    taker = cupy.floor(N/splits).astype(cupy.int32)
     seed = 0
     
-    idxs = numpy.linspace(0,taker,taker,dtype=numpy.int32)
+    idxs = cupy.linspace(0,taker,taker,dtype=cupy.int32)
     
     for i in range(iterations):
         seed = seed + 1
-        numpy.random.seed(seed)
+        cupy.random.seed(seed)
         random_idx_list = numpy.random.permutation(N)
+        random_idx_list = cupy.array(random_idx_list)
         
         #skiper = 0        
         idxs = 0
@@ -62,32 +64,22 @@ def sgd_subset(train_X, train_Y, iterations, alpha, regularization,weight_matrix
 
             idxs = random_idx_list[init:ending]
         
-            weight_matrix[numpy.abs(weight_matrix)<0.0000001]=0 
+            weight_matrix[cupy.abs(weight_matrix)<0.0000001]=0 
             weight_matrix_square = weight_matrix*weight_matrix
-            tensor_of_proto_vx = numpy.tensordot(tensor_of_x_features[idxs],weight_matrix,axes=1)
-            tensor_of_proto_square = numpy.tensordot(tensor_of_x_features_squared[idxs],weight_matrix_square,axes=1)
-            vector_of_prediction = numpy.tensordot(((tensor_of_proto_vx*tensor_of_proto_vx) - tensor_of_proto_square),vector_of_sum,axes=1).sum(axis=1)*0.5
+            tensor_of_proto_vx = cupy.tensordot(tensor_of_x_features[idxs],weight_matrix,axes=1)
+            tensor_of_proto_square = cupy.tensordot(tensor_of_x_features_squared[idxs],weight_matrix_square,axes=1)
+            vector_of_prediction = cupy.tensordot(((tensor_of_proto_vx*tensor_of_proto_vx) - tensor_of_proto_square),vector_of_sum,axes=1).sum(axis=1)*0.5
             b = train_Y[idxs]-vector_of_prediction
-            print(numpy.abs(b.mean()))
+            print(cupy.abs(b.mean()))
             vector_of_gradient = -2*b
-            vrau = numpy.tensordot(tensor_of_x_squared[idxs],weight_matrix,axes=1)
+            vrau = cupy.tensordot(tensor_of_x_squared[idxs],weight_matrix,axes=1)
             update_step = ((vector_of_gradient.T*vrau.T).T).sum(axis=0)+weight_matrix_square*regularization
     
             #ADAGRAD UPDATE
             historical_gradient += update_step * update_step
-            weight_matrix -= alpha/(numpy.sqrt(historical_gradient)) * update_step#+0.000001
+            weight_matrix -= alpha/(cupy.sqrt(historical_gradient)) * update_step#+0.000001
         
     return weight_matrix
-
-def fm_gradient_sgd_trick(x_features, y_target, weights, regularization,meio,proto_x_matrix,proto_vx,proto_vx_square,proto_prediction):
-    proto_x_matrix = x_features.T.dot(x_features)#(333,333)
-    proto_x_matrix.setdiag(0)
-    proto_vx =  x_features.dot(weights) #(1,4)    
-    proto_vx_square = (x_features.multiply(x_features)).dot(weights.multiply(weights)) #(1,4)
-    proto_prediction = meio.multiply(proto_vx.multiply(proto_vx) - proto_vx_square).sum()
-    gradient = numpy.tanh(y_target-proto_prediction)        
-    weights = weights.multiply(regularization) + (proto_x_matrix.dot(weights)).multiply(gradient)#+ (proto_x_matrix.dot(weights)).multiply(gradient)
-    return  weights #(333,4)
 
 def delete_column(array, *args):
     filtered_names = [x for x in array.dtype.names if x not in args]
@@ -151,8 +143,8 @@ def MatthewsCoefficient(perf_table):
     M = (tp*tn - (fp*fn))/numpy.sqrt((tp+fp)*(tp+fn)*(tn+fp)*(tn+fn))
     return M
 
-aprendizado_fm = genfromtxt('sauro/datasets/antigohistoricoresposta/1/aprendizado_fm.csv', delimiter='\t', names=True)
-teste_fm = genfromtxt('sauro/datasets/antigohistoricoresposta/1/teste_fm.csv', delimiter='\t', names=True)
+aprendizado_fm = genfromtxt('sauro/datasets/antigohistoricoresposta/aprendizado_fm.csv', delimiter='\t', names=True)
+teste_fm = genfromtxt('sauro/datasets/antigohistoricoresposta/teste_fm.csv', delimiter='\t', names=True)
 
 numpy.seterr(invalid='raise')
 numpy.seterr(over='raise')
@@ -174,6 +166,8 @@ trainY = trainY.view(numpy.float64).reshape(trainY.size,1)
 trainX =  [[int(y) for y in x] for x in trainX]
 trainX = numpy.clip(trainX,0, 1)
 
+
+
 validationY =  validationY.view(numpy.float64).reshape(validationY.size,1)
 
 validationX = [[int(y) for y in x] for x in validationX]
@@ -186,6 +180,14 @@ a_factors = 4
 modelo =  numpy.random.ranf((trainX.shape[1], a_factors))
 modelo = modelo / numpy.sqrt((modelo*modelo).sum())
 
+trainX = cupy.array(trainX)
+#validationX = cupy.array(validationX)
+
+trainY = cupy.array(trainY)
+#validationY = cupy.array(validationY)
+
+modelo = cupy.array(modelo)
+
 skip = 0
 end = 0
 sp_split = 80
@@ -197,6 +199,8 @@ for i in range(sp_split):
     modelo = train( trainX[skip:end], trainY[skip:end], iterations=40, alpha=1/(100), regularization=1/(1000), factors=a_factors,w=modelo)
 
 end = time.time()
+
+modelo = cupy.asnumpy(modelo)
 
 print((end - start)," Seconds")
 print(((end - start)/60)," Minutes")
