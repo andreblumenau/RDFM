@@ -69,7 +69,7 @@ def sgd_subset(train_X, train_Y, iterations, alpha, regularization,weight_matrix
             tensor_of_proto_square = numpy.tensordot(tensor_of_x_features_squared[idxs],weight_matrix_square,axes=1)
             vector_of_prediction = numpy.tensordot(((tensor_of_proto_vx*tensor_of_proto_vx) - tensor_of_proto_square),vector_of_sum,axes=1).sum(axis=1)*0.5
             b = train_Y[idxs]-vector_of_prediction
-            print(numpy.abs(b.mean()))
+            #print(numpy.abs(b.mean()))
             vector_of_gradient = -2*b
             vrau = numpy.tensordot(tensor_of_x_squared[idxs],weight_matrix,axes=1)
             update_step = ((vector_of_gradient.T*vrau.T).T).sum(axis=0)+weight_matrix_square*regularization
@@ -151,20 +151,9 @@ def MatthewsCoefficient(perf_table):
     
     M = (tp*tn - (fp*fn))/numpy.sqrt((tp+fp)*(tp+fn)*(tn+fp)*(tn+fn))
     return M
-
-  
-print(1,os.path.isfile('./aprendizado/aprendizado_fm.csv'))
-print(2,os.path.isfile('./teste/teste_fm.csv'))
-print(3,os.path.isfile('sauro/datasets/antigohistoricoresposta/aprendizado/aprendizado_fm.csv'))
-print(4,os.path.isfile('sauro/datasets/antigohistoricoresposta/teste/teste_fm.csv'))
-print(5,os.path.isfile('sauro/datasets/antigohistoricoresposta/1/aprendizado/aprendizado_fm.csv'))
-print(6,os.path.isfile('sauro/datasets/antigohistoricoresposta/1/teste/teste_fm.csv'))
-print(7,os.path.isfile('sauro/datasets/aprendizado/aprendizado_fm.csv'))
-print(8,os.path.isfile('sauro/datasets/teste/teste_fm.csv'))
     
-    
-aprendizado_fm = genfromtxt('sauro/datasets/antigohistoricoresposta/1/aprendizado_fm.csv', delimiter='\t', names=True)
-teste_fm = genfromtxt('sauro/datasets/antigohistoricoresposta/1/teste_fm.csv', delimiter='\t', names=True)
+aprendizado_fm = genfromtxt('/floyd/input/aprendizado/aprendizado_fm.csv', delimiter='\t', names=True)
+teste_fm = genfromtxt('/floyd/input/teste/teste_fm.csv', delimiter='\t', names=True)
 
 numpy.seterr(invalid='raise')
 numpy.seterr(over='raise')
