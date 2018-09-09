@@ -23,7 +23,7 @@ def sgd_subset(train_X, train_Y, iterations, alpha, regularization,weight_matrix
     tensor_of_x_squared = cupy.tile(0.0,(N,trainX.shape[1],trainX.shape[1]))
 
     matrix_set_diag_to_zero = cupy.tile(1.0,(trainX.shape[1],trainX.shape[1]))
-    numpy.fill_diagonal(matrix_set_diag_to_zero,0.0)
+    cupy.fill_diagonal(matrix_set_diag_to_zero,0.0)
     for i in range(N):
         tensor_of_x_features[i]=train_X[i]
         tensor_of_x_squared[i]=train_X[i].dot(train_X[i])
