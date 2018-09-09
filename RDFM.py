@@ -2,8 +2,8 @@ import numpy
 from numpy import genfromtxt
 from numpy import arange
 import time
-import sys
-import winsound
+#import sys
+#import winsound
 import scipy
 from scipy import special
     
@@ -151,8 +151,8 @@ def MatthewsCoefficient(perf_table):
     M = (tp*tn - (fp*fn))/numpy.sqrt((tp+fp)*(tp+fn)*(tn+fp)*(tn+fn))
     return M
 
-aprendizado_fm = genfromtxt('C:/PosGrad/Experimentos/aprendizado_fm.csv', delimiter='\t', names=True)
-teste_fm = genfromtxt('C:/PosGrad/Experimentos/teste_fm.csv', delimiter='\t', names=True)
+aprendizado_fm = genfromtxt('sauro/datasets/antigohistoricoresposta/aprendizado_fm.csv', delimiter='\t', names=True)
+teste_fm = genfromtxt('sauro/datasets/antigohistoricoresposta/teste_fm.csv', delimiter='\t', names=True)
 
 numpy.seterr(invalid='raise')
 numpy.seterr(over='raise')
@@ -198,8 +198,6 @@ for i in range(sp_split):
 
 end = time.time()
 
-
-winsound.PlaySound("C:\\Users\\AndréRodrigo\\Downloads\\LTTP\\LTTP_Get_HeartPiece_StereoR.wav", winsound.SND_FILENAME)
 print((end - start)," Seconds")
 print(((end - start)/60)," Minutes")
 evaluate(validationX,validationY,modelo)
