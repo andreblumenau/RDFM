@@ -45,7 +45,7 @@ def sgd_subset(train_X, train_Y, iterations, alpha, regularization,weight_matrix
     taker = cupy.floor(N/splits).astype(cupy.int32)
     seed = 0
     
-    idxs = cupy.linspace(0,taker,taker,dtype=cupy.int32)
+    idxs = cupy.linspace(start=0,stop=taker,num=taker,dtype=cupy.int32)
     
     for i in range(iterations):
         seed = seed + 1
