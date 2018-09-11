@@ -41,7 +41,9 @@ def sgd_subset(train_X, train_Y, iterations, alpha, regularization,weight_matrix
     weight_matrix_square = cupy.tile(0.0,(weight_matrix.shape))
     update_step = cupy.tile(0.0,(weight_matrix.shape))
 
-    splits = 9
+    splits = 3#9*2#720
+    splits_minus_one = splits -1
+    n_minus_one = N -1
     #print(numpy.floor(N/splits))
     taker = numpy.floor(N/splits).astype(numpy.int32)
     seed = 0
@@ -52,8 +54,8 @@ def sgd_subset(train_X, train_Y, iterations, alpha, regularization,weight_matrix
     for i in range(iterations):
         seed = seed + 1
         cupy.random.seed(seed)
-        random_idx_list = numpy.random.permutation(N)
-        random_idx_list = cupy.array(random_idx_list)
+        numpy_rand_idx_list = numpy.random.permutation(N)
+        random_idx_list = cupy.array(numpy_rand_idx_list)
         
         #skiper = 0        
         #idxs = 0
@@ -64,6 +66,9 @@ def sgd_subset(train_X, train_Y, iterations, alpha, regularization,weight_matrix
             init = j*taker
             ending = (j+1)*taker
 
+            if j == (splits_minus_one):
+                ending = n_minus_one
+            
             idxs = random_idx_list[init:ending]
         
             weight_matrix[cupy.abs(weight_matrix)<0.0000001]=0 
@@ -103,7 +108,7 @@ def softmax(X,W):
     
 def fm_get_p(X, W):
     #print(W)
-    xa = numpy.array([X])
+    xa = cupy.array([X])
     VX =  xa.dot(W)
     VX_square = (xa*xa).dot(W*W)
     phi = 0.5*(VX*VX - VX_square).sum()
@@ -128,6 +133,7 @@ def evaluate(x, y, w):
     print('min y', min(y))
     print('max y', max(y))
     p_y = []
+    #w
 
     for i in range(x.shape[0]): 
         p_y.append(softmax(x[i], w))#,meio))
@@ -192,7 +198,7 @@ modelo = cupy.array(modelo)
 
 skip = 0
 end = 0
-sp_split = 80
+sp_split = 240
 take = numpy.floor(trainX.shape[0]/sp_split).astype(numpy.int32)
 start = time.time()
 for i in range(sp_split):    
