@@ -42,10 +42,12 @@ def sgd_subset(train_X, train_Y, iterations, alpha, regularization,weight_matrix
     update_step = cupy.tile(0.0,(weight_matrix.shape))
 
     splits = 9
-    taker = cupy.floor(N/splits).astype(cupy.int32)
+    #print(numpy.floor(N/splits))
+    taker = numpy.floor(N/splits).astype(numpy.int32)
     seed = 0
     
-    idxs = cupy.linspace(start=0,stop=taker,num=taker,dtype=cupy.int32)
+    #print(taker)
+    idxs = cupy.linspace(start=0,stop=taker,num=taker)#,dtype=cupy.int32)
     
     for i in range(iterations):
         seed = seed + 1
@@ -54,7 +56,7 @@ def sgd_subset(train_X, train_Y, iterations, alpha, regularization,weight_matrix
         random_idx_list = cupy.array(random_idx_list)
         
         #skiper = 0        
-        idxs = 0
+        #idxs = 0
         init = 0
         ending = 0
         
@@ -206,3 +208,12 @@ print((end - start)," Seconds")
 print(((end - start)/60)," Minutes")
 evaluate(validationX,validationY,modelo)
 
+#2018-09-10 20:10:12 PST 189.56243991851807 Seconds
+#2018-09-10 20:10:12 PST 3.1593739986419678 Minutes
+#2018-09-10 20:10:12 PST evaluation
+#2018-09-10 20:10:12 PST min y [ 0.]
+#2018-09-10 20:10:12 PST max y [ 1.]
+#2018-09-10 20:10:12 PST [[2868, 68], [32, 1]]
+#2018-09-10 20:10:12 PST Performance: [[2868, 68], [32, 1]]
+#2018-09-10 20:10:12 PST Accuracy: 0.9663186257999327
+#2018-09-10 20:10:12 PST MATTHEWS Coefficient: 0.00496989890429
