@@ -179,6 +179,12 @@ def MatthewsCoefficient(perf_table):
     
     M = (tp*tn - (fp*fn))/numpy.sqrt((tp+fp)*(tp+fn)*(tn+fp)*(tn+fn))
     return M
+
+big_file = open("C:/PosGrad/Experimentos/aprendizado_fm.csv",'r')
+lines = big_file.readlines()[:10]
+big_file.close()
+
+ eita = genfromtxt(lines, delimiter='\t', names=True)
     
 aprendizado_fm = genfromtxt('C:\PosGrad\Movielens1M\data_processed_ 1 .csv', delimiter=',', names=True)
 teste_fm = genfromtxt('C:\PosGrad\Movielens1M\data_processed_ 1 .csv', delimiter=',', names=True)
@@ -214,25 +220,19 @@ validation_bias_vector = numpy.tile(1,(validationX.shape[0],1))
 trainX = numpy.hstack((training_bias_vector,trainX))
 validationX = numpy.hstack((validation_bias_vector,validationX))
 
-#trainX = preprocessing.scale(trainX)
-#validationX = preprocessing.scale(validationX)
-
-
+trainX = preprocessing.scale(trainX)
+validationX = preprocessing.scale(validationX)
 
 trainY = numpy.clip(trainY, 0, 1)
 validationY = numpy.clip(validationY, 0, 1)
 
 a_factors = 4
 
-
 skip = 0
 end = 0
 sp_split = 240 #Split for Memory
 take = numpy.floor(trainX.shape[0]/sp_split).astype(numpy.int32)
 start = time.time()
-
-trainX = COO.from_numpy(trainX)
-validationX = COO.from_numpy(validationX)
 
 modelo =  numpy.random.ranf((trainX.shape[1], a_factors))
 modelo = modelo / numpy.sqrt((modelo*modelo).sum())
