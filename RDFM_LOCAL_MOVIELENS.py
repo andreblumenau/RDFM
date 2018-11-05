@@ -3,14 +3,11 @@ from numpy import genfromtxt
 from numpy import arange
 import time
 import os
-#import sys
 import winsound
-#import scipy
-#from scipy import special
-#from scipy import sparse
-from sklearn import preprocessing
-import sparse
-from sparse import COO
+import pre_process
+from pre_process import process_csv_data
+#from sklearn import preprocessing
+
     
 def sgd_subset(train_X, train_Y, iterations, alpha, regularization,weight_matrix):
     N = train_X.shape[0]#N = 6928 & 6928/866=8
@@ -21,24 +18,20 @@ def sgd_subset(train_X, train_Y, iterations, alpha, regularization,weight_matrix
 
     matrix_set_diag_to_zero = numpy.tile(1.0,(trainX.shape[1],trainX.shape[1]))
     numpy.fill_diagonal(matrix_set_diag_to_zero,0.0)
-    matrix_set_diag_to_zero =  COO.from_numpy(matrix_set_diag_to_zero)
-    
-    tensor_of_x_features = COO.from_numpy(tensor_of_x_features)
-    tensor_of_x_squared = COO.from_numpy(tensor_of_x_squared)
 
     for i in range(N):
         tensor_of_x_features[i]=train_X[i]
-        tensor_of_x_squared[i]=(train_X[i].dot(train_X[i]))
+        tensor_of_x_squared[i]=train_X[i].dot(train_X[i])
 
     historical_gradient=numpy.tile(0.0,(weight_matrix.shape))
     tensor_of_x_squared = tensor_of_x_squared*matrix_set_diag_to_zero
     tensor_of_x_features_squared = tensor_of_x_features*tensor_of_x_features
     
-    tensor_of_proto_vx = COO.from_numpy(numpy.tile(0.0,(N,1,M)))
-    tensor_of_proto_square = COO.from_numpy(numpy.tile(0.0,(N,1,M)))
-    vector_of_prediction = COO.from_numpy(numpy.tile(0.0,N))
-    vector_of_sum = COO.from_numpy(numpy.tile(1.0,(M,1)))
-    vector_of_gradient = COO.from_numpy(numpy.tile(0.0,N))
+    tensor_of_proto_vx = numpy.tile(0.0,(N,1,M))
+    tensor_of_proto_square = numpy.tile(0.0,(N,1,M))
+    vector_of_prediction = numpy.tile(0.0,N)
+    vector_of_sum = numpy.tile(1.0,(M,1))
+    vector_of_gradient = numpy.tile(0.0,N)
     
     weight_matrix_square = numpy.tile(0.0,(weight_matrix.shape))
     update_step = numpy.tile(0.0,(weight_matrix.shape))
@@ -73,15 +66,15 @@ def sgd_subset(train_X, train_Y, iterations, alpha, regularization,weight_matrix
         
             weight_matrix[numpy.abs(weight_matrix)<0.0000001]=0 
             weight_matrix_square = weight_matrix*weight_matrix
-            tensor_of_proto_vx = sparse.tensordot(tensor_of_x_features[idxs],weight_matrix,axes=1)
-            tensor_of_proto_square = sparse.tensordot(tensor_of_x_features_squared[idxs],weight_matrix_square,axes=1)
-            vector_of_prediction = sparse.tensordot(((tensor_of_proto_vx*tensor_of_proto_vx) - tensor_of_proto_square),vector_of_sum,axes=1).sum(axis=1)*0.5
+            tensor_of_proto_vx = numpy.tensordot(tensor_of_x_features[idxs],weight_matrix,axes=1)
+            tensor_of_proto_square = numpy.tensordot(tensor_of_x_features_squared[idxs],weight_matrix_square,axes=1)
+            vector_of_prediction = numpy.tensordot(((tensor_of_proto_vx*tensor_of_proto_vx) - tensor_of_proto_square),vector_of_sum,axes=1).sum(axis=1)*0.5
             b = train_Y[idxs]-vector_of_prediction           
    
             error_sum = error_sum+b.mean()
             
             vector_of_gradient = -2*b
-            vrau = sparse.tensordot(tensor_of_x_squared[idxs],weight_matrix,axes=1)
+            vrau = numpy.tensordot(tensor_of_x_squared[idxs],weight_matrix,axes=1)
             update_step = ((vector_of_gradient.T*vrau.T).T).sum(axis=0)+weight_matrix_square*regularization
     
             #ADAGRAD UPDATE
@@ -180,51 +173,58 @@ def MatthewsCoefficient(perf_table):
     M = (tp*tn - (fp*fn))/numpy.sqrt((tp+fp)*(tp+fn)*(tn+fp)*(tn+fn))
     return M
 
-big_file = open("C:/PosGrad/Experimentos/aprendizado_fm.csv",'r')
-lines = big_file.readlines()[:10]
-big_file.close()
+# big_file = open("C:/PosGrad/Experimentos/aprendizado_fm.csv",'r')
+# lines = big_file.readlines()[:10]
+# big_file.close()
 
- eita = genfromtxt(lines, delimiter='\t', names=True)
+ # eita = genfromtxt(lines, delimiter='\t', names=True)
     
-aprendizado_fm = genfromtxt('C:\PosGrad\Movielens1M\data_processed_ 1 .csv', delimiter=',', names=True)
-teste_fm = genfromtxt('C:\PosGrad\Movielens1M\data_processed_ 1 .csv', delimiter=',', names=True)
+# aprendizado_fm = genfromtxt('C:\PosGrad\Movielens1M\data_processed_ 1 .csv', delimiter=',', names=True)
+# teste_fm = genfromtxt('C:\PosGrad\Movielens1M\data_processed_ 1 .csv', delimiter=',', names=True)
 
-numpy.seterr(invalid='raise')
-numpy.seterr(over='raise')
-numpy.seterr(under='raise')
-numpy.seterr(divide='raise')
+# numpy.seterr(invalid='raise')
+# numpy.seterr(over='raise')
+# numpy.seterr(under='raise')
+# numpy.seterr(divide='raise')
 
-trainX = aprendizado_fm.copy()
-trainX = delete_column(trainX, "Vendido")
-#trainX = delete_column(trainX, "Agendado")
-trainY = aprendizado_fm["Rating"].copy()
+# trainX = aprendizado_fm.copy()
+# trainX = delete_column(trainX, "Vendido")
+# #trainX = delete_column(trainX, "Agendado")
+# trainY = aprendizado_fm["Rating"].copy()
 
-validationX = teste_fm.copy()
-validationX = delete_column(validationX, "Rating")
-#validationX = delete_column(validationX, "Agendado")
-validationY = teste_fm["Rating"].copy()
+# validationX = teste_fm.copy()
+# validationX = delete_column(validationX, "Rating")
+# #validationX = delete_column(validationX, "Agendado")
+# validationY = teste_fm["Rating"].copy()
 
-trainY = trainY.view(numpy.float64).reshape(trainY.size,1)
+# trainY = trainY.view(numpy.float64).reshape(trainY.size,1)
 
-trainX =  [[int(y) for y in x] for x in trainX]
-trainX = numpy.clip(trainX,0, 1)
+# trainX =  [[int(y) for y in x] for x in trainX]
+# trainX = numpy.clip(trainX,0, 1)
 
-validationY =  validationY.view(numpy.float64).reshape(validationY.size,1)
+# validationY =  validationY.view(numpy.float64).reshape(validationY.size,1)
 
-validationX = [[int(y) for y in x] for x in validationX]
-validationX = numpy.clip(validationX, 0, 1)
+# validationX = [[int(y) for y in x] for x in validationX]
+# validationX = numpy.clip(validationX, 0, 1)
 
-training_bias_vector = numpy.tile(1,(trainX.shape[0],1))
-validation_bias_vector = numpy.tile(1,(validationX.shape[0],1))
+# training_bias_vector = numpy.tile(1,(trainX.shape[0],1))
+# validation_bias_vector = numpy.tile(1,(validationX.shape[0],1))
 
-trainX = numpy.hstack((training_bias_vector,trainX))
-validationX = numpy.hstack((validation_bias_vector,validationX))
+# trainX = numpy.hstack((training_bias_vector,trainX))
+# validationX = numpy.hstack((validation_bias_vector,validationX))
 
-trainX = preprocessing.scale(trainX)
-validationX = preprocessing.scale(validationX)
+# trainX = preprocessing.scale(trainX)
+# validationX = preprocessing.scale(validationX)
 
-trainY = numpy.clip(trainY, 0, 1)
-validationY = numpy.clip(validationY, 0, 1)
+# trainY = numpy.clip(trainY, 0, 1)
+# validationY = numpy.clip(validationY, 0, 1)
+
+
+path_csv = "C:\PosGrad\Movielens1M\data_processed_ 1 .csv"
+delimiter  = ","
+target_column = "Rating"
+
+trainX,trainY,validationX,validationY = process_csv_data(path_csv, 0,1000,delimiter,target_column)
 
 a_factors = 4
 
