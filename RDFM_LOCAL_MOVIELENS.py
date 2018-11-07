@@ -6,12 +6,18 @@ import os
 import winsound
 import pre_process
 from pre_process import process_csv_data
+import scipy
+from scipy import special
 #from sklearn import preprocessing
 
     
 def sgd_subset(train_X, train_Y, iterations, alpha, regularization,weight_matrix):
+
     N = train_X.shape[0]#N = 6928 & 6928/866=8
     M = weight_matrix.shape[1]
+
+    print("N",N)
+    print("M",M)
     
     tensor_of_x_features = numpy.tile(0.0,(N,1,trainX.shape[1]))
     tensor_of_x_squared = numpy.tile(0.0,(N,trainX.shape[1],trainX.shape[1]))
@@ -40,7 +46,8 @@ def sgd_subset(train_X, train_Y, iterations, alpha, regularization,weight_matrix
     taker = numpy.floor(N/splits).astype(numpy.int32)
     seed = 0
     
-    idxs = numpy.linspace(0,taker,taker,dtype=numpy.int32)  
+    #idxs = numpy.linspace(0,taker,taker,dtype=numpy.int32)  
+    #print("idxs",idxs)
 
     patience = 0
     patience_limit = 5
@@ -69,8 +76,10 @@ def sgd_subset(train_X, train_Y, iterations, alpha, regularization,weight_matrix
             tensor_of_proto_vx = numpy.tensordot(tensor_of_x_features[idxs],weight_matrix,axes=1)
             tensor_of_proto_square = numpy.tensordot(tensor_of_x_features_squared[idxs],weight_matrix_square,axes=1)
             vector_of_prediction = numpy.tensordot(((tensor_of_proto_vx*tensor_of_proto_vx) - tensor_of_proto_square),vector_of_sum,axes=1).sum(axis=1)*0.5
-            b = train_Y[idxs]-vector_of_prediction           
-   
+            b = train_Y[idxs]-vector_of_prediction
+            
+            print(b.mean())
+
             error_sum = error_sum+b.mean()
             
             vector_of_gradient = -2*b
@@ -79,7 +88,7 @@ def sgd_subset(train_X, train_Y, iterations, alpha, regularization,weight_matrix
     
             #ADAGRAD UPDATE
             historical_gradient += update_step * update_step
-            weight_matrix -= alpha/(numpy.sqrt(historical_gradient)) * update_step#+0.000001            
+            weight_matrix -= alpha/((numpy.sqrt(historical_gradient)) * update_step+0.000001)
 
         #print(error_sum)
         #print(splits)
@@ -119,12 +128,13 @@ def softmax(X,W,Y_VECTOR_EXPIT_SUM):
     VX_square = (xa*xa).dot(W*W)
     phi = 0.5*(VX*VX - VX_square).sum()
     
-    z = [0.0, 1.0]
-    softmax_result = scipy.special.expit(phi)/numpy.sum(scipy.special.expit(z))
-    if softmax_result > 0.5:
-        return 1
-    else:
-        return 0
+    return phi
+    #z = [0.0, 1.0]
+    #softmax_result = scipy.special.expit(phi)/numpy.sum(scipy.special.expit(z))
+    #if softmax_result > 0.5:
+    #    return 1
+    #else:
+    #    return 0
         
     
 def fm_get_p(X, W):
@@ -138,7 +148,46 @@ def fm_get_p(X, W):
         return 1
     else:
         return 0
-
+        
+def table_adapted(X,Y):
+    w, h = 2, 6
+    table_t = [[0 for x in range(w)] for y in range(h)]
+    X = numpy.array(X)
+    X = numpy.clip(X,0,5)
+    X = X.tolist()
+    
+    for i in range(len(X)):
+        if X[i] == 0:
+            col =  1 if Y[i] == 0 else 0
+            table_t[1][col]= table_t[0][col] + 1
+    
+        if X[i] == 1:
+            col =  1 if Y[i] == 1 else 0
+            table_t[1][col]= table_t[1][col] + 1
+            
+        if X[i] == 2:
+            col =  1 if Y[i] == 2 else 0
+            table_t[2][col]= table_t[2][col] + 1
+            
+        if X[i] == 3:
+            col =  1 if Y[i] == 3 else 0
+            table_t[3][col]= table_t[3][col] + 1       
+            
+        if X[i] == 4:
+            col =  1 if Y[i] == 4 else 0
+            table_t[4][col]= table_t[4][col] + 1                      
+            
+        if X[i] == 5:
+            col =  1 if Y[i] == 5 else 0
+            table_t[5][col]= table_t[5][col] + 1                                     
+           
+        # a = (0 if X[i] == Y[i] else 1)
+        # b = (0 if Y[i] < 0.5 else 1)
+        # table_t[a][b] = table_t[a][b] + 1
+    print(table_t)
+    return table_t
+        
+        
 def table(X,Y):
     w, h = 2, 2
     table_t = [[0 for x in range(w)] for y in range(h)]
@@ -158,8 +207,9 @@ def evaluate(x, y, w):
     y_expit=numpy.sum(scipy.special.expit(y))
 
     for i in range(x.shape[0]): 
-        p_y.append(softmax(x[i], w,y_expit))#,meio))
-    perf = table(p_y, y)
+        p_y.append(round(softmax(x[i], w,y_expit)*5))#,meio))
+        
+    perf = table_adapted(p_y, y*5)
     print('Performance: ', perf)
     print('Accuracy:',(perf[0][0]+perf[1][1])/x.shape[0])
     print('MATTHEWS Coefficient:',MatthewsCoefficient(perf))
@@ -230,7 +280,7 @@ a_factors = 4
 
 skip = 0
 end = 0
-sp_split = 240 #Split for Memory
+sp_split = 24 #Split for Memory
 take = numpy.floor(trainX.shape[0]/sp_split).astype(numpy.int32)
 start = time.time()
 
