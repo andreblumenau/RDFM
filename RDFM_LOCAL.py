@@ -8,6 +8,7 @@ import winsound
 import scipy
 from scipy import special
 from sklearn import preprocessing
+
     
 def sgd_subset(train_X, train_Y, iterations, alpha, regularization,weight_matrix):
     N = train_X.shape[0]#N = 6928 & 6928/866=8

@@ -252,9 +252,9 @@ for i in range(sp_split):
         break;
     
     sp_last_iteration_error = numpy.abs(sp_error)
-
-    gc.collect()
     
+    gc.collect()
+
 end = time.time()
 
 print((end - start)," Seconds")
