@@ -1,6 +1,6 @@
 import numpy
 
-def learning(training_features, training_targets, iterations, alpha, regularization,weight_matrix,patience_limit,error_diff_limit = 0.0000001,performance_splits=1):
+def learning(training_features, training_targets, iterations, alpha, regularization,weight_matrix,patience_limit,iteration_error_diff_limit = 0.0000001,batch_size=1):
     N = training_features.shape[0]
     M = weight_matrix.shape[1]
     
@@ -27,10 +27,11 @@ def learning(training_features, training_targets, iterations, alpha, regularizat
     weight_matrix_square = numpy.tile(0.0,(weight_matrix.shape))
     update_step = numpy.tile(0.0,(weight_matrix.shape))
 
-    taker = numpy.floor(N/performance_splits).astype(numpy.int32)
+    #batch_size = #numpy.floor(N/batch_count).astype(numpy.int32)
+    batch_count = numpy.floor(N/batch_size).astype(numpy.int32)
     seed = 0
     
-    idxs = numpy.linspace(0,taker,taker,dtype=numpy.int32)  
+    idxs = numpy.linspace(0,batch_size,batch_size,dtype=numpy.int32)  
 
     patience = 0
     last_iteration_error = 0
@@ -47,9 +48,9 @@ def learning(training_features, training_targets, iterations, alpha, regularizat
         ending = 0
         error_sum = 0
         
-        for j in range(performance_splits):
-            init = j*taker
-            ending = (j+1)*taker
+        for j in range(batch_count):
+            init = j*batch_size
+            ending = (j+1)*batch_size
 
             idxs = random_idx_list[init:ending]
         
@@ -72,9 +73,9 @@ def learning(training_features, training_targets, iterations, alpha, regularizat
             historical_gradient += update_step * update_step
             weight_matrix -= alpha/(numpy.sqrt(historical_gradient)) * update_step#+0.000001            
 
-        error_iter_array[i] = error_sum/performance_splits
+        error_iter_array[i] = error_sum/batch_count
 
-        if numpy.abs(numpy.abs(error_iter_array[i]) - last_iteration_error) < error_diff_limit:
+        if numpy.abs(numpy.abs(error_iter_array[i]) - last_iteration_error) < iteration_error_diff_limit:
           patience = patience+1
         else:
           patience = 0        
