@@ -57,6 +57,8 @@ def evaluate(x, y, w):
         p_y.append(fm_get_p(x[i], w))
 
     perf = table_adapted(p_y, y)
+    #rmse = numpy.power((numpy.array(p_y)-numpy.array(y))/len(y))
+    print('RMSE: ',)
     print('Performance: \n', perf)
     print('Accuracy:',(perf.trace()/x.shape[0]))
     print('MATTHEWS Coefficient:',matthews_coefficient(perf))

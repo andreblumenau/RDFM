@@ -11,6 +11,7 @@ from metrics import matthews_coefficient
 from metrics import table_adapted
 from metrics import evaluate
 from cpu_learning import learning
+import csv
 import gc
    
 path_csv = "C:\PosGrad\Movielens1M\data_processed_ 1 .csv"
@@ -39,17 +40,18 @@ sample_error_limit = 0.0000001
 sample_patience = 0
 sample_patience_limit = 80
 
+csv_delimiter = '	'
 my_file = Path("/path/to/file")
-if my_file.is_file() == False:
-    f = open('errorPerIteration.csv','w')
-    f.write("SAMPLE,ITERATION,RMSE")
-    f.close()
-
+f = open('errorPerIteration.csv','w',newline='')
+writer = csv.writer(f, delimiter=csv_delimiter)
+writer.writerow(["SAMPLE","ITERATION","RMSE"])
+f.close()
+    
 skip = 0
 end = 0   
     
 #for j in range(memory_split):    
-for j in range(10):
+for j in range(2):
     skip = j*take    
     end = ((j+1)*take)      
     modelo,iteration_error,error_iter_array = learning( 
@@ -72,10 +74,12 @@ for j in range(10):
     
     last_iteration_error = numpy.abs(iteration_error)
     
-    f = open('errorPerIteration.csv','a')
+    f = open('errorPerIteration.csv','a',newline='')
+    writer = csv.writer(f, delimiter=csv_delimiter)    
     
     for k in range(len(error_iter_array)):
-        f.write(str(j)+","+str(k)+","+str(error_iter_array[k])+"\r\n") #Give your csv text here.
+        #f.write([j,k,error_iter_array[k],"\n"]) #Give your csv text here.
+        writer.writerow([j,k,error_iter_array[k]])
     f.close()    
     gc.collect()
     
