@@ -36,7 +36,8 @@ def learning(training_features, training_targets, iterations, alpha, regularizat
     patience = 0
     last_iteration_error = 0
 
-    error_iter_array = numpy.tile(1,(iterations,1))     
+    #error_iter_array = numpy.tile(1,(iterations,1))
+    error_iter_array = numpy.empty(iterations, dtype=numpy.float32)
 
     for i in range(iterations):
         seed = seed + 1

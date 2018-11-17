@@ -42,9 +42,8 @@ sample_patience_limit = 80
 my_file = Path("/path/to/file")
 if my_file.is_file() == False:
     f = open('errorPerIteration.csv','w')
-    f.write("")
+    f.write("SAMPLE,ITERATION,RMSE")
     f.close()
-    
 
 skip = 0
 end = 0   
@@ -75,15 +74,12 @@ for j in range(10):
     
     f = open('errorPerIteration.csv','a')
     
-    print(dir(error_iter_array))
-    
     for k in range(len(error_iter_array)):
-        #print(error_iter_array[k])
-        f.write(str(error_iter_array[k])+",\n") #Give your csv text here.
+        f.write(str(j)+","+str(k)+","+str(error_iter_array[k])+"\r\n") #Give your csv text here.
     f.close()    
     gc.collect()
     
-#end = time.time()
+end = time.time()
 
 print((end - start)," Seconds")
 print(((end - start)/60)," Minutes")
