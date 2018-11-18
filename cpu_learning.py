@@ -1,6 +1,6 @@
 import numpy
 
-def optimize(training_features, training_targets, iterations, alpha, regularization,weight_matrix,patience_limit,iteration_error_diff_limit = 0.0000001,batch_size=1):
+def optimize(training_features, training_targets, iterations, alpha, regularization,weight_matrix,batch_size=1,iteration_patience,iteration_patience_threshold = 0.0000001):
     N = training_features.shape[0]
     M = weight_matrix.shape[1]
     
@@ -33,7 +33,7 @@ def optimize(training_features, training_targets, iterations, alpha, regularizat
     
     idxs = numpy.linspace(0,batch_size,batch_size,dtype=numpy.int32)  
 
-    patience = 0
+    patience_counter = 0
     last_iteration_error = 0
 
     #error_iter_array = numpy.tile(1,(iterations,1))
@@ -76,13 +76,13 @@ def optimize(training_features, training_targets, iterations, alpha, regularizat
 
         error_iter_array[i] = error_sum/batch_count
 
-        if numpy.abs(numpy.abs(error_iter_array[i]) - last_iteration_error) < iteration_error_diff_limit:
-          patience = patience+1
+        if numpy.abs(numpy.abs(error_iter_array[i]) - last_iteration_error) < iteration_patience_threshold:
+          patience_counter = patience_counter+1
         else:
-          patience = 0        
+          patience_counter = 0 #RESET
           
-        if patience == patience_limit:
-          break
+        if patience_counter == iteration_patience:
+          break #
         
         last_iteration_error = numpy.abs(error_iter_array[i])
         
