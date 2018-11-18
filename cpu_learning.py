@@ -1,6 +1,6 @@
 import numpy
 
-def learning(training_features, training_targets, iterations, alpha, regularization,weight_matrix,patience_limit,iteration_error_diff_limit = 0.0000001,batch_size=1):
+def optimize(training_features, training_targets, iterations, alpha, regularization,weight_matrix,patience_limit,iteration_error_diff_limit = 0.0000001,batch_size=1):
     N = training_features.shape[0]
     M = weight_matrix.shape[1]
     
