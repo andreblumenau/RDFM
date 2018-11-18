@@ -15,23 +15,7 @@ import csv
 import gc
 
 class FactorizationMachine:
-    # self.model = None
-    
-    # self.iterations=0
-    # self.learning_rate=0
-    # self.latent_vectors=0
-    # self.regularization=0
-    # self.slice_size=0
-    # self.batch_size=0
-    # self.slice_patience=0
-    # self.iteration_patience=0    
-    # self.iteration_patience_threshold=0
-    # self.slice_patience_threshold=0
-    
-    # self.memory_split=0
-
     def get_random_weight_matrix(self,number_of_features,number_of_latent_vectors):
-        #model =  numpy.random.ranf((trainX.shape[1], number_of_latent_vectors))
         model =  numpy.random.ranf((number_of_features, number_of_latent_vectors))
         model = model / numpy.sqrt((model*model).sum())
         return model
@@ -60,24 +44,6 @@ class FactorizationMachine:
         self.slice_patience_threshold       = slice_patience_threshold   
         self.iteration_patience_threshold   = iteration_patience_threshold
 
-        
-        #Computed properties
-        
-        #self.slice_count =  numpy.floor(trainX.shape[0]/slice_size).astype(numpy.int32)
-        
-    # iteration_error = 0 
-
-    # slice_patience_threshold = 0.0000001
-    # patience_counter = 0
-    # slice_patience = 80
-    
-    # csv_delimiter = '	'
-    # my_file = Path("/path/to/file")
-    # f = open('errorPerIteration.csv','w',newline='')
-    # writer = csv.writer(f, delimiter=csv_delimiter)
-    # writer.writerow(["SAMPLE","ITERATION","RMSE"])
-    # f.close()
-
     def learn(self,trainX,trainY):
     
         skip = 0
@@ -91,15 +57,10 @@ class FactorizationMachine:
         if self.slice_patience >= slice_count:
             raise ValueError('"slice_size" parameter cannot be smaller than "batch_size" parameter.')            
         
-        #start = time.time()
-            
         if self.model is None:
             self.model = self.get_random_weight_matrix(trainX.shape[1],self.latent_vectors)
             
-        #if model.slice_size  >
-
-        #for j in range(slice_count):        
-        for j in range(1):
+        for j in range(1):#(slice_count):        
             skip = j*self.slice_size    
             end = ((j+1)*self.slice_size)      
             self.model,iteration_error,error_iter_array = optimize( 
@@ -123,13 +84,15 @@ class FactorizationMachine:
             
             last_iteration_error = numpy.abs(iteration_error)
             
-            # f = open('errorPerIteration.csv','a',newline='')
-            # writer = csv.writer(f, delimiter=csv_delimiter)    
+
+            gc.collect()            
             
-            # for k in range(len(error_iter_array)):
-                # writer.writerow([j,k,error_iter_array[k]])
-            # f.close()    
-            gc.collect()
+# f = open('errorPerIteration.csv','a',newline='')
+# writer = csv.writer(f, delimiter=csv_delimiter)    
+
+# for k in range(len(error_iter_array)):
+    # writer.writerow([j,k,error_iter_array[k]])
+# f.close()                
     
 #end = time.time()
 
