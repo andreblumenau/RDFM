@@ -15,28 +15,28 @@ import csv
 import gc
 
 class FactorizationMachine:
-    self.model = None
+    # self.model = None
     
-    self.iterations=0
-    self.learning_rate=0
-    self.latent_vectors=0
-    self.regularization=0
-    self.slice_size=0
-    self.batch_size=0
-    self.slice_patience=0
-    self.iteration_patience=0    
-    self.iteration_patience_threshold=0
-    self.slice_patience_threshold=0
+    # self.iterations=0
+    # self.learning_rate=0
+    # self.latent_vectors=0
+    # self.regularization=0
+    # self.slice_size=0
+    # self.batch_size=0
+    # self.slice_patience=0
+    # self.iteration_patience=0    
+    # self.iteration_patience_threshold=0
+    # self.slice_patience_threshold=0
     
-    self.memory_split=0
+    # self.memory_split=0
 
-    def get_random_weight_matrix(number_of_features,number_of_latent_vectors):
+    def get_random_weight_matrix(self,number_of_features,number_of_latent_vectors):
         #model =  numpy.random.ranf((trainX.shape[1], number_of_latent_vectors))
         model =  numpy.random.ranf((number_of_features, number_of_latent_vectors))
         model = model / numpy.sqrt((model*model).sum())
         return model
     
-    def function(self,iterations,learning_rate,latent_vectors,regularization,slice_size,batch_size,
+    def __init__(self,iterations,learning_rate,latent_vectors,regularization,slice_size,batch_size,
     slice_patience,iteration_patience,slice_patience_threshold,iteration_patience_threshold):    
 
         if slice_size < batch_size:
@@ -78,7 +78,7 @@ class FactorizationMachine:
     # writer.writerow(["SAMPLE","ITERATION","RMSE"])
     # f.close()
 
-    def learn(trainX,trainY):
+    def learn(self,trainX,trainY):
     
         skip = 0
         end = 0   
@@ -93,8 +93,8 @@ class FactorizationMachine:
         
         #start = time.time()
             
-        if model is None:
-            self.model = get_random_weight_matrix(trainX.shape[1],self.latent_vectors)
+        if self.model is None:
+            self.model = self.get_random_weight_matrix(trainX.shape[1],self.latent_vectors)
             
         #if model.slice_size  >
 
@@ -102,13 +102,13 @@ class FactorizationMachine:
         for j in range(1):
             skip = j*self.slice_size    
             end = ((j+1)*self.slice_size)      
-            self.modelo,iteration_error,error_iter_array = optimize( 
+            self.model,iteration_error,error_iter_array = optimize( 
                 trainX[skip:end], 
                 trainY[skip:end], 
                 iterations                   = self.iterations,
                 alpha                        = self.learning_rate,
                 regularization               = self.regularization,
-                weight_matrix                = self.modelo,
+                weight_matrix                = self.model,
                 batch_size                   = self.batch_size,
                 iteration_patience           = self.iteration_patience,            
                 iteration_patience_threshold = self.iteration_patience_threshold)
@@ -133,7 +133,7 @@ class FactorizationMachine:
     
 #end = time.time()
 
-var factorization_machine = FactorizationMachine(
+factorization_machine = FactorizationMachine(
     iterations                      = 10,
     learning_rate                   = 1/(100),
     latent_vectors                  = 4,
@@ -150,9 +150,9 @@ delimiter  = ","
 target_column = "Rating"
 
 trainX,trainY,validationX,validationY = process_csv_data(path_csv, 0,1000,delimiter,target_column)            
-factorization_machine.learn()
+factorization_machine.learn(trainX,trainY)
             
 #print((end - start)," Seconds")
 #print(((end - start)/60)," Minutes")
-evaluate(validationX,validationY,modelo)
+evaluate(validationX,validationY,factorization_machine.model)
 winsound.PlaySound("C:\\Users\\AndréRodrigo\\Downloads\\LTTP\\LTTP_Get_HeartPiece_StereoR.wav", winsound.SND_FILENAME)
