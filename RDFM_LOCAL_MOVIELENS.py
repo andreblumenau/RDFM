@@ -4,7 +4,7 @@ import winsound
 import pre_process
 import factorization_machine
 from factorization_machine import FactorizationMachine
-from pre_process import process_csv_data
+from pre_process import DataProcessing
 from metrics import evaluate
 import csv
 
@@ -20,12 +20,12 @@ factorization_machine = FactorizationMachine(
     slice_patience_threshold        = 0.0000001,
     iteration_patience_threshold    = 0.0000001)
             
-trainX,trainY,validationX,validationY = process_csv_data(
+data_handler = DataProcessing(
     path = "C:\PosGrad\Movielens1M\data_processed_ 1 .csv",
-    lineStart  = 0,
-    lineEnd    = 1000,
-    delimiter= ",",
-    target_column="Rating") 
+    delimiter_char = ",",
+    target_column = "Rating")                
+            
+trainX,trainY,validationX,validationY = data_handler.process_csv_data(lineStart  = 0,lineEnd    = 999)
     
 factorization_machine.learn(trainX,trainY)
             
