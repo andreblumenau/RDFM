@@ -47,7 +47,9 @@ for i in range(turns):
         trainX,trainY,validationX,validationY,validation_indexes = data_handler.process_csv_data(lineStart = sample_start, lineEnd = sample_end)
     
         instance_list[j].learn(trainX,trainY)
-        evaluate(validationX,validationY,instance_list[j].model)
+        rmse,error_by_index = evaluate(validationX,validationY,instance_list[j].model)
+        print("5 índices com menores erros = ",error_by_index[0:5,1].astype(numpy.int32))
+        print("5 índices com maiores erros = ",error_by_index[(len(error_by_index)-5):len(error_by_index),1].astype(numpy.int32))
     
         sample_start = sample_start + dataset_partition_size
         sample_end = sample_end + dataset_partition_size
