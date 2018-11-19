@@ -2,6 +2,7 @@ import numpy
 import cpu_learning
 from cpu_learning import optimize
 import gc
+from metrics import evaluate
 
 class FactorizationMachine:
     def get_random_weight_matrix(self,number_of_features,number_of_latent_vectors):
@@ -73,4 +74,18 @@ class FactorizationMachine:
             
             last_iteration_error = numpy.abs(iteration_error)
 
-            gc.collect()            
+            gc.collect()
+
+    def predict(self,validationX,validationY,error_buffer=5):
+        rmse,error_by_index = evaluate(validationX,validationY,self.model)
+        
+        if error_buffer > error_by_index.shape[0]:
+            error_buffer = error_by_index.shape[0]
+        
+        self.smallest_error = error_by_index[0:error_buffer,1].astype(numpy.int32)
+        self.greatest_error = error_by_index[(len(error_by_index)-error_buffer):len(error_by_index),1].astype(numpy.int32)
+        
+        return rmse
+            
+    def tardigrade():
+        return
