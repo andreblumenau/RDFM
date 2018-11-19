@@ -41,6 +41,12 @@ def RMSE(p_y,y):
     subtraction = numpy.subtract(numpy.array(p_y),numpy.transpose(y))
     rmse = numpy.sum(numpy.sqrt(numpy.power(subtraction,2)))/len(y)
     return rmse
+
+def error_by_index(p_y,y):
+    subtraction = numpy.subtract(numpy.array(p_y),numpy.transpose(y))
+    enumerate = numpy.arange(0,subtraction.shape[1],1)
+    error_by_index = numpy.vstack((subtraction[0],enumerate)).transpose()
+    return error_by_index
     
 def evaluate(x, y, w):
     print('evaluation')
@@ -50,15 +56,15 @@ def evaluate(x, y, w):
 
     for i in range(x.shape[0]): 
         p_y.append(fm_get_p(x[i], w))
-
-        
         
     #perf = table_ratings(p_y, y)
+    
 
     #return RMSE, ACC, ConfusionMatrix
     rmse = RMSE(p_y,y)#,(perf.trace()/x.shape[0]),table_ratings(p_y, y)
+    error_by_index = error_by_index(p_y,y)
     print('RMSE: ',rmse)
-    return rmse
+    return rmse,error_by_index
     #print('Performance: \n', perf)
     #print('Accuracy:',(perf.trace()/x.shape[0]))
     #print('MATTHEWS Coefficient:',matthews_coefficient(perf))
