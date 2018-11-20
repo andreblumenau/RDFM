@@ -70,4 +70,13 @@ def evaluate(x, y, w):
     #print('Accuracy:',(perf.trace()/x.shape[0]))
     #print('MATTHEWS Coefficient:',matthews_coefficient(perf))
     
+def evaluate_rmse(x, y, w):
+    p_y = []
+
+    for i in range(x.shape[0]): 
+        p_y.append(fm_get_p(x[i], w))
+
+    rmse = RMSE(p_y,y)#,(perf.trace()/x.shape[0]),table_ratings(p_y, y)
+    print('RMSE: ',rmse)
+    return rmse   
 

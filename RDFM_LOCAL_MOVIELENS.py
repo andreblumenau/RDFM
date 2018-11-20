@@ -43,19 +43,26 @@ correction_offset = dataset_size - dataset_partition_size*turns*number_of_instan
 sample_end = dataset_partition_size + correction_offset
 
 for i in range(turns):
+
+    weight_matrices = []
+
     for j in range(number_of_instances):
         trainX,trainY,validationX,validationY,validation_indexes = data_handler.process_csv_data(lineStart = sample_start, lineEnd = sample_end)
     
         instance_list[j].learn(trainX,trainY)
         rmse = instance_list[j].predict(validationX,validationY)
-        #print("5 índices com menores erros = ",error_by_index[0:5,1].astype(numpy.int32))
-        #print("5 índices com maiores erros = ",error_by_index[(len(error_by_index)-5):len(error_by_index),1].astype(numpy.int32))
+        
+        weight_matrices.append(instance_list[j].model)
     
         sample_start = sample_start + dataset_partition_size
         sample_end = sample_end + dataset_partition_size
+        
+    tardigrade_matrices = numpy.array(weight_matrices)    
+    print("tardigrade_matrices.shape",tardigrade_matrices.shape)
+        
+    for j in range(number_of_instances):
+        instance_list[j].tardigrade(data_handler,numpy.delete(tardigrade_matrices,j,axis=0))
 
-#trainX,trainY,validationX,validationY = data_handler.process_csv_data(lineStart  = 0,lineEnd    = 999)
-#factorization_machine.learn(trainX,trainY)
 end = time.time()    
             
 print((end - start)," Seconds")

@@ -2,6 +2,7 @@ import numpy
 import cpu_learning
 from cpu_learning import optimize
 import gc
+from pre_process import DataProcessing #Talvez desnecessário
 from metrics import evaluate
 
 class FactorizationMachine:
@@ -84,8 +85,17 @@ class FactorizationMachine:
         
         self.smallest_error = error_by_index[0:error_buffer,1].astype(numpy.int32)
         self.greatest_error = error_by_index[(len(error_by_index)-error_buffer):len(error_by_index),1].astype(numpy.int32)
+        print("self.smallest_error",self.smallest_error)
+        print("self.smallest_error.shape",self.smallest_error.shape)
         
         return rmse
             
-    def tardigrade():
+    def tardigrade(data_handler,neighbourhood_models):
+        indexes = numpy.hstack((self.smallest_error,self.greatest_error))        
+        validation_subset = data_handler.table_from_indexes(indexes)
+        index_and_rmse = numpy.tile(1,(neighbourhood_models.shape[0],2))
+        
+        for i in range(neighbourhood_models.shape[0]):
+            #evaluate_rmse(validation_subset)
+    
         return

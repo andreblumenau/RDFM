@@ -1,9 +1,6 @@
 import numpy
 from numpy import genfromtxt
 from numpy import random
-#import random as random
-#from random import randint
-#import linecache
 
 class DataProcessing:
     def __init__(self,path,delimiter_char,target_column):
@@ -34,9 +31,6 @@ class DataProcessing:
         
         training_indexes = self.random_sorted_indexes[lineStart:(lineStart+seventyPercent)]
         training = self.table_from_indexes(training_indexes)
-        # training_indexes = numpy.insert(training_indexes,0,int(0)).tolist()
-        # training_lines = self.lines[training_indexes]
-        # training   = genfromtxt(training_lines, delimiter=self.delimiter, names=True)
         training_target = training[self.target_column].copy()
         training_target = training_target.view(numpy.float64).reshape(training_target.size,1)  
     
@@ -47,9 +41,6 @@ class DataProcessing:
         
         validation_indexes = self.random_sorted_indexes[(lineStart+seventyPercent+1):lineEnd]
         validation = self.table_from_indexes(validation_indexes)
-        # validation_indexes = numpy.insert(validation_indexes,0,int(0)).tolist()     
-        # validation_lines = self.lines[validation_indexes]
-        # validation = genfromtxt(validation_lines, delimiter=self.delimiter, names=True)
         validation_target = validation[self.target_column].copy()
         validation_target =  validation_target.view(numpy.float64).reshape(validation_target.size,1)
         
