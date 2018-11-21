@@ -4,6 +4,7 @@ from cpu_learning import optimize
 import gc
 from pre_process import DataProcessing #Talvez desnecessário
 from metrics import evaluate
+from metrics import evaluate_rmse
 
 class FactorizationMachine:
     def get_random_weight_matrix(self,number_of_features,number_of_latent_vectors):
@@ -85,17 +86,26 @@ class FactorizationMachine:
         
         self.smallest_error = error_by_index[0:error_buffer,1].astype(numpy.int32)
         self.greatest_error = error_by_index[(len(error_by_index)-error_buffer):len(error_by_index),1].astype(numpy.int32)
-        print("self.smallest_error",self.smallest_error)
-        print("self.smallest_error.shape",self.smallest_error.shape)
+        self.error_buffer = error_buffer
+        #print("self.smallest_error",self.smallest_error)
+        #print("self.smallest_error.shape",self.smallest_error.shape)
         
         return rmse
             
-    def tardigrade(data_handler,neighbourhood_models):
+    def tardigrade(self,data_handler,neighbourhood_models):
         indexes = numpy.hstack((self.smallest_error,self.greatest_error))        
-        validation_subset = data_handler.table_from_indexes(indexes)
+        features,target = data_handler.features_and_target_from_indexes(indexes)
         index_and_rmse = numpy.tile(1,(neighbourhood_models.shape[0],2))
         
         for i in range(neighbourhood_models.shape[0]):
-            #evaluate_rmse(validation_subset)
-    
+            index_and_rmse[i][1] = i
+            index_and_rmse[i][0] = evaluate_rmse(features,target,neighbourhood_models[i])
+        
+        index_and_rmse = index_and_rmse[index_and_rmse[:,0].argsort()]
+        tensor = numpy.tile(0,(1,self.model.shape[0],self.model.shape[1]))
+        tensor[0] = self.model
+        neighbourhood_models = neighbourhood_models[index_and_rmse[0:max(index_and_rmse.shape[0],self.error_buffer),1]]
+        
+        self.model = numpy.vstack((neighbourhood_models,tensor)).mean(axis=0)
         return
+        

@@ -61,6 +61,7 @@ for i in range(turns):
     print("tardigrade_matrices.shape",tardigrade_matrices.shape)
         
     for j in range(number_of_instances):
+        #numpy.delete creates a new list without the instance_list[j] model
         instance_list[j].tardigrade(data_handler,numpy.delete(tardigrade_matrices,j,axis=0))
 
 end = time.time()    
