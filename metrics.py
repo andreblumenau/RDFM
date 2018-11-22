@@ -77,8 +77,8 @@ def evaluate_rmse(x, y, w):
         p_y.append(fm_get_p(x[i], w))
 
     rmse = RMSE(p_y,y)#,(perf.trace()/x.shape[0]),table_ratings(p_y, y)
-    print("x = \n",x)
-    print("y = \n",y)
+    # print("x = \n",x)
+    # print("y = \n",y)
     print('RMSE: ',rmse)
     return rmse   
 

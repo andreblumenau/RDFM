@@ -68,5 +68,4 @@ end = time.time()
             
 print((end - start)," Seconds")
 print(((end - start)/60)," Minutes")
-#evaluate(validationX,validationY,factorization_machine.model)
 winsound.PlaySound("C:\\Users\\AndréRodrigo\\Downloads\\LTTP\\LTTP_Get_HeartPiece_StereoR.wav", winsound.SND_FILENAME)
