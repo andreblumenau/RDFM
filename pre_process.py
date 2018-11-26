@@ -4,16 +4,16 @@ from numpy import genfromtxt
 from numpy import random
 
 class DataProcessing:
-    def __init__(self,path,delimiter_char,target_column):
+    def __init__(self,path,total_lines,delimiter_char,target_column):
         self.path = path
         self.delimiter = delimiter_char
 
         #Better code can be written to read the first line(headers) of a csv file.
         csv_file = open(self.path,"r")
-        reader = csv.reader(csv_file,delimiter=delimiter_char)
+        reader = csv.reader(csv_file,delimiter=self.delimiter)
 
         header_line_index_list = [0]
-        headers = read_my_lines(reader, header_line_index_list)
+        headers = self.read_my_lines(reader, header_line_index_list)
         header_line=[]
         for item in headers:
             #Skips first column
@@ -23,7 +23,7 @@ class DataProcessing:
         #Higly inneficient but used only once.
         self.index_for_target_column = header_line[0].index(target_column)
 
-        self.random_sorted_indexes = list(range(1,len(self.lines)))
+        self.random_sorted_indexes = list(range(1,total_lines))
         numpy.random.shuffle(self.random_sorted_indexes)
 
     def delete_column(self,array, *args):
@@ -32,9 +32,9 @@ class DataProcessing:
     
     def features_and_target_from_indexes(self,indexes):
         csv_file = open(self.path,"r")
-        reader = csv.reader(csv_file,delimiter=delimiter_char)        
+        reader = csv.reader(csv_file,delimiter=self.delimiter)        
         
-        file_generator = read_my_lines_float(reader,lines_list)
+        file_generator = self.read_my_lines_float(reader,indexes)
         lines = []
         for item in file_generator:
             #Skips first column
@@ -44,7 +44,7 @@ class DataProcessing:
         table = numpy.stack(lines)
         
         
-        target = table[self.target_column].copy()
+        target = table[:,self.index_for_target_column].copy()
         target = target.view(numpy.float64).reshape(target.size,1)  
     
         features =  [[float(y) for y in x] for x in table]
@@ -67,7 +67,7 @@ class DataProcessing:
         
         return training_features,training_target,validation_features,validation_target,validation_indexes
         
-    def read_my_lines(csv_reader, lines_list):
+    def read_my_lines(self,csv_reader, lines_list):
         # make sure every line number shows up only once:
         lines_set = set(lines_list)
         for line_number, row in enumerate(csv_reader):
@@ -79,7 +79,7 @@ class DataProcessing:
                 if not lines_set:
                     break
     
-    def read_my_lines_float(csv_reader, lines_list):
+    def read_my_lines_float(self,csv_reader, lines_list):
         # make sure every line number shows up only once:
         lines_set = set(lines_list)
         for line_number, row in enumerate(csv_reader):

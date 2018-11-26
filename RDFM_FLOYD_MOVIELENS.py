@@ -10,7 +10,6 @@ import csv
 number_of_instances = 5
 instance_list = []
 
-
 for i in range(number_of_instances):
     factorization_machine = FactorizationMachine(
         iterations                      = 20,
@@ -27,17 +26,19 @@ for i in range(number_of_instances):
     instance_list.append(factorization_machine)
 
 print("Factorization Machines created.")    
-data_handler = DataProcessing(
-    path = '/floyd/input/movielens/movielens.csv',
-    delimiter_char = ",",
-    target_column = "Rating")       
-print("Database loaded.")        
-    
+
 dataset_size = 1000000-1    
 sample_start = 0
 sample_end = 0
 turns = 500
 start = time.time()
+
+data_handler = DataProcessing(
+    path = '/floyd/input/movielens/movielens.csv',
+    total_lines = dataset_size    
+    delimiter_char = ",",
+    target_column = "Rating")       
+print("Database loaded.")
 
 dataset_partition_size = int(numpy.floor(dataset_size/(turns*number_of_instances)))
 print("dataset_partition_size =",dataset_partition_size)

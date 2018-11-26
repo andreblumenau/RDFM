@@ -26,16 +26,18 @@ for i in range(number_of_instances):
         iteration_patience_threshold    = 0.0000001)
         
     instance_list.append(factorization_machine)
-            
-data_handler = DataProcessing(
-    path = "C:\PosGrad\Movielens1M\data_processed_ 1 .csv",
-    delimiter_char = ",",
-    target_column = "Rating")                
-    
+           
 dataset_size = 999    
 sample_start = 0
 sample_end = 0
 turns = 2
+           
+data_handler = DataProcessing(
+    path = "C:\PosGrad\Movielens1M\data_processed_ 1 .csv",
+    total_lines = dataset_size
+    delimiter_char = ",",
+    target_column = "Rating")
+    
 start = time.time()
 
 dataset_partition_size = int(numpy.floor(999/(turns*number_of_instances)))
