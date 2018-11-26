@@ -64,7 +64,8 @@ def evaluate(x, y, w):
     #return RMSE, ACC, ConfusionMatrix
     rmse = RMSE(p_y,y)#,(perf.trace()/x.shape[0]),table_ratings(p_y, y)
     error_list = error_by_index(p_y,y)
-    print('RMSE: ',rmse)
+    #print('RMSE: ',rmse)
+    print('{"metric": "RMSE", "value": '+str(numpy.round(rmse,5))+'}')
     return rmse,error_list
     #print('Performance: \n', perf)
     #print('Accuracy:',(perf.trace()/x.shape[0]))
@@ -79,6 +80,7 @@ def evaluate_rmse(x, y, w):
     rmse = RMSE(p_y,y)#,(perf.trace()/x.shape[0]),table_ratings(p_y, y)
     # print("x = \n",x)
     # print("y = \n",y)
-    print('RMSE: ',rmse)
+    #print('RMSE: ',rmse)
+    print('{"metric": "RMSE", "value": '+str(numpy.round(rmse,5))+'}')
     return rmse   
 
