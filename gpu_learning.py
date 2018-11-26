@@ -5,6 +5,8 @@ def optimize(training_features, training_targets, iterations, alpha, regularizat
     N = training_features.shape[0]
     M = weight_matrix.shape[1]
     
+    alpha = cupy.array([alpha]) 
+    
     tensor_of_x_features = cupy.tile(0.0,(N,1,training_features.shape[1]))
     tensor_of_x_squared = cupy.tile(0.0,(N,training_features.shape[1],training_features.shape[1]))
 

@@ -1,0 +1,23 @@
+import numpy
+from numpy import genfromtext
+
+with open("C:\Gondolin\Bohemian Rhapsody.txt") as f:
+index = 0
+lineStart = 0
+lineEnd = 0
+
+
+
+
+  while True:
+	index = index+1
+    c = f.read(index)
+    if not c:
+      print("End of file")
+      break
+    
+    if c=='\n':
+        print("Ahaha")
+    else:
+        print("Read a character:", c)
+
