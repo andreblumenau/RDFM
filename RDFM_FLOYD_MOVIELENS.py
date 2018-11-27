@@ -7,31 +7,13 @@ from pre_process import DataProcessing
 from metrics import evaluate
 import csv
 
-number_of_instances = 5
-instance_list = []
-
-for i in range(number_of_instances):
-    factorization_machine = FactorizationMachine(
-        iterations                      = 10,#Per Batch
-        learning_rate                   = 1/(100),
-        latent_vectors                  = 4,
-        regularization                  = 1/(1000),
-        slice_size                      = 20,
-        batch_size                      = 20,
-        slice_patience                  = 5,
-        iteration_patience              = 3,
-        slice_patience_threshold        = 0.0001,
-        iteration_patience_threshold    = 0.001)
-        
-    instance_list.append(factorization_machine)
-
-print("Factorization Machines created.")    
-
 dataset_size = 1000000/100 -1#1000000-1    
 sample_start = 0
 sample_end = 0
 turns = 150
-start = time.time()
+number_of_instances = 5
+instance_list = []
+
 
 data_handler = DataProcessing(
     path = '/floyd/input/movielens/movielens.csv',
@@ -42,10 +24,29 @@ print("Database loaded.")
 
 dataset_partition_size = int(numpy.floor(dataset_size/(turns*number_of_instances)))
 print("dataset_partition_size =",dataset_partition_size)
+
+for i in range(number_of_instances):
+    factorization_machine = FactorizationMachine(
+        iterations                      = 10,#Per Batch
+        learning_rate                   = 1/(100),
+        latent_vectors                  = 4,
+        regularization                  = 1/(1000),
+        slice_size                      = 20*(3),
+        batch_size                      = 20*(3),
+        slice_patience                  = 5,
+        iteration_patience              = 3,
+        slice_patience_threshold        = 0.0001,
+        iteration_patience_threshold    = 0.001)
+        
+    instance_list.append(factorization_machine)
+
+print("Factorization Machines created.")
+
 correction_offset = dataset_size - dataset_partition_size*turns*number_of_instances
 sample_end = dataset_partition_size + correction_offset
 
-print("About to start iterations through the dataset.")        
+print("About to start iterations through the dataset.")    
+start = time.time()    
 for i in range(turns):    
     weight_matrices = []
 

@@ -1,6 +1,7 @@
 import numpy
 import cpu_learning
 from cpu_learning import optimize
+from gpu_learning import optimize_cuda
 import gc
 from pre_process import DataProcessing #Talvez desnecessário
 from metrics import evaluate
