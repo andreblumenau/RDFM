@@ -1,7 +1,7 @@
 import numpy
 import cupy
 
-def optimize_cuda(training_features, training_targets, iterations, alpha, regularization,weight_matrix,batch_size,iteration_patience,iteration_patience_threshold):
+def optimize(training_features, training_targets, iterations, alpha, regularization,weight_matrix,batch_size,iteration_patience,iteration_patience_threshold):
     N = training_features.shape[0]
     M = weight_matrix.shape[1]
     

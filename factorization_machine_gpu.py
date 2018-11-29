@@ -11,8 +11,7 @@ class FactorizationMachineGPU:
     def get_random_weight_matrix(self,number_of_features,number_of_latent_vectors):
         model =  numpy.random.ranf((number_of_features, number_of_latent_vectors))
         model = model / numpy.sqrt((model*model).sum())
-        modelo = 
-        .array(modelo)
+        model = cupy.array(model)
         return model
     
     def __init__(self,iterations,learning_rate,latent_vectors,regularization,slice_size,batch_size,
