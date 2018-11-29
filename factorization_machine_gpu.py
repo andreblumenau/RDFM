@@ -48,7 +48,7 @@ class FactorizationMachineGPU:
     
         slice_count =  cupy.floor(trainX.shape[0]/self.slice_size).astype(cupy.int32)
         
-        if self.slice_patience >= slice_count:
+        if self.slice_patience > slice_count:
             raise ValueError('"slice_patience" parameter cannot be smaller than "slice_count" parameter.')            
         
         if self.model is None:

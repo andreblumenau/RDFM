@@ -32,10 +32,10 @@ for i in range(number_of_instances):
         learning_rate                   = 1/(100),
         latent_vectors                  = 4,
         regularization                  = 1/(1000),
-        slice_size                      = 20*(3),
-        batch_size                      = 20*(3),
+        slice_size                      = 40,
+        batch_size                      = 40,
         slice_patience                  = 5,
-        iteration_patience              = 3,
+        iteration_patience              = 5,
         slice_patience_threshold        = 0.0001,
         iteration_patience_threshold    = 0.001)
         
