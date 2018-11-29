@@ -1,15 +1,18 @@
 import numpy
-import cpu_learning
-from cpu_learning import optimize
+import gpu_learning
+from gpu_learning import optimize
 import gc
 from pre_process import DataProcessing #Talvez desnecessário
-from metrics import evaluate
-from metrics import evaluate_rmse
+from metrics_gpu import evaluate
+from metrics_gpu import evaluate_rmse
+import cupy
 
-class FactorizationMachine:
+class FactorizationMachineGPU:
     def get_random_weight_matrix(self,number_of_features,number_of_latent_vectors):
         model =  numpy.random.ranf((number_of_features, number_of_latent_vectors))
         model = model / numpy.sqrt((model*model).sum())
+        modelo = 
+        .array(modelo)
         return model
     
     def __init__(self,iterations,learning_rate,latent_vectors,regularization,slice_size,batch_size,
@@ -44,7 +47,7 @@ class FactorizationMachine:
         iteration_error = 0
         last_iteration_error = 0
     
-        slice_count =  numpy.floor(trainX.shape[0]/self.slice_size).astype(numpy.int32)
+        slice_count =  cupy.floor(trainX.shape[0]/self.slice_size).astype(cupy.int32)
         
         if self.slice_patience >= slice_count:
             raise ValueError('"slice_patience" parameter cannot be smaller than "slice_count" parameter.')            
@@ -66,7 +69,7 @@ class FactorizationMachine:
                 iteration_patience           = self.iteration_patience,            
                 iteration_patience_threshold = self.iteration_patience_threshold)
         
-            if numpy.abs(numpy.abs(iteration_error)-last_iteration_error) < self.slice_patience_threshold:
+            if cupy.abs(cupy.abs(iteration_error)-last_iteration_error) < self.slice_patience_threshold:
                 patience_counter = patience_counter+1
             else:
                 patience_counter = 0
@@ -74,7 +77,7 @@ class FactorizationMachine:
             if patience_counter == self.slice_patience:
                 break;
             
-            last_iteration_error = numpy.abs(iteration_error)
+            last_iteration_error = cupy.abs(iteration_error)
 
             gc.collect()
 
@@ -84,8 +87,8 @@ class FactorizationMachine:
         if error_buffer > error_by_index.shape[0]:
             error_buffer = error_by_index.shape[0]
         
-        self.smallest_error = error_by_index[0:error_buffer,1].astype(numpy.int32)
-        self.greatest_error = error_by_index[(len(error_by_index)-error_buffer):len(error_by_index),1].astype(numpy.int32)
+        self.smallest_error = error_by_index[0:error_buffer,1].astype(cupy.int32)
+        self.greatest_error = error_by_index[(len(error_by_index)-error_buffer):len(error_by_index),1].astype(cupy.int32)
         self.error_buffer = error_buffer
         #print("self.smallest_error",self.smallest_error)
         #print("self.smallest_error.shape",self.smallest_error.shape)
@@ -93,19 +96,19 @@ class FactorizationMachine:
         return rmse
             
     def tardigrade(self,data_handler,neighbourhood_models):
-        indexes = numpy.hstack((self.smallest_error,self.greatest_error))        
+        indexes = cupy.hstack((self.smallest_error,self.greatest_error))        
         features,target = data_handler.features_and_target_from_indexes(indexes)
-        index_and_rmse = numpy.tile(1,(neighbourhood_models.shape[0],2))
+        index_and_rmse = cupy.tile(1,(neighbourhood_models.shape[0],2))
         
         for i in range(neighbourhood_models.shape[0]):
             index_and_rmse[i][1] = i
             index_and_rmse[i][0] = evaluate_rmse(features,target,neighbourhood_models[i])
         
         index_and_rmse = index_and_rmse[index_and_rmse[:,0].argsort()]
-        tensor = numpy.tile(0,(1,self.model.shape[0],self.model.shape[1]))
+        tensor = cupy.tile(0,(1,self.model.shape[0],self.model.shape[1]))
         tensor[0] = self.model
         neighbourhood_models = neighbourhood_models[index_and_rmse[0:max(index_and_rmse.shape[0],self.error_buffer),1]]
         
-        self.model = numpy.vstack((neighbourhood_models,tensor)).mean(axis=0)
+        self.model = cupy.vstack((neighbourhood_models,tensor)).mean(axis=0)
         return
         

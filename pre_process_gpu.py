@@ -23,7 +23,7 @@ class DataProcessing:
         #Higly inneficient but used only once.
         self.index_for_target_column = header_line[0].index(target_column)
 
-        self.random_sorted_indexes = list(range(1,int(total_lines)))
+        self.random_sorted_indexes = list(range(1,total_lines))
         numpy.random.shuffle(self.random_sorted_indexes)
 
     def delete_column(self,array, *args):
