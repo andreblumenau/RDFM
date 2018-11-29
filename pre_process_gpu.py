@@ -62,7 +62,7 @@ class DataProcessing:
         training_indexes = self.random_sorted_indexes[lineStart:(lineStart+seventyPercent)]
         training_features,training_target = self.features_and_target_from_indexes(training_indexes)  
         
-        validation_indexes = self.random_sorted_indexes[(lineStart+seventyPercent+1):lineEnd]
+        validation_indexes = self.random_sorted_indexes[int(lineStart+seventyPercent+1):lineEnd]
         validation_features, validation_target = self.features_and_target_from_indexes(validation_indexes)   
         
         return training_features,training_target,validation_features,validation_target,validation_indexes

@@ -45,6 +45,7 @@ print("Factorization Machines created.")
 
 correction_offset = dataset_size - dataset_partition_size*turns*number_of_instances
 sample_end = dataset_partition_size + correction_offset
+sample_end = int(sample_end)
 
 print("About to start iterations through the dataset.")    
 start = time.time()    
