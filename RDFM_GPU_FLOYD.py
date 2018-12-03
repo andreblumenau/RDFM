@@ -8,14 +8,14 @@ from metrics_gpu import evaluate
 import csv
 import cupy
 
-dataset_size = 1000000/100 -1#1000000-1    
+dataset_size = 1000000/10 -1#1000000-1    
 sample_start = 0
 sample_end = 0
 turns = 150
 number_of_instances = 5
 instance_list = []
 
-
+print("Loading database...")
 data_handler = DataProcessing(
     path = '/floyd/input/movielens/movielens.csv',
     total_lines = dataset_size,    
