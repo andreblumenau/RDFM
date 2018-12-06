@@ -1,7 +1,9 @@
 import csv
 import numpy
+import time
 from numpy import genfromtxt
 from numpy import random
+from random import shuffle
 
 class DataProcessing:
     def __init__(self,path,total_lines,delimiter_char,target_column):
@@ -31,6 +33,9 @@ class DataProcessing:
         return array[filtered_names]
     
     def features_and_target_from_indexes(self,indexes):
+        start_reading = time.time()
+        indexes.sort()
+        print(indexes)
         csv_file = open(self.path,"r")
         reader = csv.reader(csv_file,delimiter=self.delimiter)        
         
@@ -41,6 +46,7 @@ class DataProcessing:
             lines.append(item[1:])
         csv_file.close()
         
+        shuffle(lines)
         table = numpy.stack(lines)
         
         
@@ -54,6 +60,9 @@ class DataProcessing:
         features_bias_vector = numpy.tile(1,(features.shape[0],1))
         features = numpy.hstack((features_bias_vector,features))  
         
+        end_reading = time.time()
+        print(round((end_reading-start_reading)/60,2)," minutos.")
+        print(lines[0])
         return features,target
     
     def process_csv_data(self,lineStart,lineEnd):
@@ -81,12 +90,15 @@ class DataProcessing:
     
     def read_my_lines_float(self,csv_reader, lines_list):
         # make sure every line number shows up only once:
-        lines_set = set(lines_list)
+        #lines_set = set(lines_list)
         for line_number, row in enumerate(csv_reader):
-            if line_number in lines_set:
+            #if line_number in lines_set:
+            if line_number == lines_list[0]:
                 #yield row#line_number, row
                 yield [ float(i) for i in row ]
-                lines_set.remove(line_number)
+                #lines_set.remove(line_number)
+                #lines_list.remove()
+                lines_list.pop(0)
                 # Stop when the set is empty
-                if not lines_set:
+                if not lines_list:
                     break

@@ -2,6 +2,10 @@ import numpy
 import cupy
 
 def optimize(training_features, training_targets, iterations, alpha, regularization,weight_matrix,batch_size,iteration_patience,iteration_patience_threshold):
+
+    training_features = cupy.array(training_features)
+    training_targets = cupy.array(training_targets)
+    
     N = training_features.shape[0]
     M = weight_matrix.shape[1]
     

@@ -11,7 +11,7 @@ import cupy
 dataset_size = 1000000/10 -1#1000000-1    
 sample_start = 0
 sample_end = 0
-turns = 150
+turns = 17
 number_of_instances = 5
 instance_list = []
 
@@ -32,8 +32,8 @@ for i in range(number_of_instances):
         learning_rate                   = 1/(100),
         latent_vectors                  = 4,
         regularization                  = 1/(1000),
-        slice_size                      = 40,
-        batch_size                      = 40,
+        slice_size                      = 5,
+        batch_size                      = 5,
         slice_patience                  = 5,
         iteration_patience              = 5,
         slice_patience_threshold        = 0.0001,
@@ -64,8 +64,9 @@ for i in range(turns):
         sample_start = sample_start + dataset_partition_size
         sample_end = sample_end + dataset_partition_size
         
-    tardigrade_matrices = cupy.array(weight_matrices)    
-    print("tardigrade_matrices.shape",tardigrade_matrices.shape)
+    tardigrade_matrices = numpy.array(weight_matrices)    
+    tardigrade_matrices = cupy.array(tardigrade_matrices)
+    print("tardigrade_matrices.shape = ",tardigrade_matrices.shape)
         
     for j in range(number_of_instances):
         #cupy.delete creates a new list without the instance_list[j] model

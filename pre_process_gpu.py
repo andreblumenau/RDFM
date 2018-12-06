@@ -41,8 +41,7 @@ class DataProcessing:
             lines.append(item[1:])
         csv_file.close()
         
-        table = numpy.stack(lines)
-        
+        table = numpy.stack(lines)        
         
         target = table[:,self.index_for_target_column].copy()
         target = target.view(numpy.float64).reshape(target.size,1)  

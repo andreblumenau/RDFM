@@ -39,7 +39,6 @@ def optimize(training_features, training_targets, iterations, alpha, regularizat
     #error_iter_array = numpy.tile(1,(iterations,1))
     error_iter_array = numpy.empty(iterations, dtype=numpy.float32)
 
-    print("starting iterations once again.")
     for i in range(iterations):
         seed = seed + 1
         numpy.random.seed(seed)
@@ -48,9 +47,8 @@ def optimize(training_features, training_targets, iterations, alpha, regularizat
         idxs = 0
         init = 0
         ending = 0
-        error_sum = 0
+        error_sum = 0        
         
-        print("")#Just to tell OS that the process is not idle
         for j in range(batch_count):
             init = j*batch_size
             ending = (j+1)*batch_size
@@ -62,9 +60,8 @@ def optimize(training_features, training_targets, iterations, alpha, regularizat
             tensor_of_proto_vx = numpy.tensordot(tensor_of_x_features[idxs],weight_matrix,axes=1)
             tensor_of_proto_square = numpy.tensordot(tensor_of_x_features_squared[idxs],weight_matrix_square,axes=1)
             vector_of_prediction = numpy.tensordot(((tensor_of_proto_vx*tensor_of_proto_vx) - tensor_of_proto_square),vector_of_sum,axes=1).sum(axis=1)*0.5
-            b = training_targets[idxs]-vector_of_prediction           
-            
-            #print(b.mean())
+            b = training_targets[idxs]-vector_of_prediction                      
+
    
             error_sum = error_sum+b.mean()
             

@@ -34,13 +34,14 @@ turns = 2
            
 data_handler = DataProcessing(
     path = "C:\PosGrad\Movielens1M\data_processed_ 1 .csv",
-    total_lines = dataset_size
+    total_lines = dataset_size,
     delimiter_char = ",",
     target_column = "Rating")
     
 start = time.time()
 
 dataset_partition_size = int(numpy.floor(999/(turns*number_of_instances)))
+print("dataset_partition_size =",dataset_partition_size)
 correction_offset = dataset_size - dataset_partition_size*turns*number_of_instances
 sample_end = dataset_partition_size + correction_offset
 
