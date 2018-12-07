@@ -1,6 +1,6 @@
 import numpy
 
-class cpu_learning:
+class CPULearning:
     def __init__(self,iterations, alpha, regularization,batch_size,iteration_patience,iteration_patience_threshold):
         self.iterations                   = iterations                   
         self.alpha                        = alpha                        

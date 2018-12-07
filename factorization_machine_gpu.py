@@ -25,18 +25,20 @@ class FactorizationMachineGPU:
 
         #"Private" properties
         self.model = None
+        self.optimization_routine = GPULearning(
+            iterations                   = iterations,
+            alpha                        = learning_rate,
+            regularization               = regularization,
+            batch_size                   = batch_size,
+            iteration_patience           = iteration_patience,
+            iteration_patience_threshold = iteration_patience_threshold
+        )
         
         #Parameterized properties
-        self.iterations                     = iterations
-        self.learning_rate                  = learning_rate               
         self.latent_vectors                 = latent_vectors              
-        self.regularization                 = regularization              
         self.slice_size                     = slice_size                 
-        self.batch_size                     = batch_size                  
         self.slice_patience                 = slice_patience             
-        self.iteration_patience             = iteration_patience              
-        self.slice_patience_threshold       = slice_patience_threshold   
-        self.iteration_patience_threshold   = iteration_patience_threshold
+        self.slice_patience_threshold       = slice_patience_threshold  
 
     def learn(self,trainX,trainY):
     

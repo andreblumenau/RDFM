@@ -1,6 +1,6 @@
 import numpy
 import cpu_learning
-from cpu_learning import optimize
+from cpu_learning import CPULearning
 import gc
 from pre_process import DataProcessing #Talvez desnecessário
 from metrics import evaluate
@@ -23,18 +23,20 @@ class FactorizationMachine:
 
         #"Private" properties
         self.model = None
+        self.optimization_routine = CPULearning(
+            iterations                   = iterations,
+            alpha                        = learning_rate,
+            regularization               = regularization,
+            batch_size                   = batch_size,
+            iteration_patience           = iteration_patience,
+            iteration_patience_threshold = iteration_patience_threshold
+        )
         
         #Parameterized properties
-        self.iterations                     = iterations
-        self.learning_rate                  = learning_rate               
         self.latent_vectors                 = latent_vectors              
-        self.regularization                 = regularization              
         self.slice_size                     = slice_size                 
-        self.batch_size                     = batch_size                  
         self.slice_patience                 = slice_patience             
-        self.iteration_patience             = iteration_patience              
         self.slice_patience_threshold       = slice_patience_threshold   
-        self.iteration_patience_threshold   = iteration_patience_threshold
 
     def learn(self,trainX,trainY):
     
@@ -56,16 +58,11 @@ class FactorizationMachine:
         for j in range(slice_count):#(slice_count):        
             skip = j*self.slice_size    
             end = ((j+1)*self.slice_size)      
-            self.model,iteration_error,error_iter_array = optimize( 
-                trainX[skip:end], 
-                trainY[skip:end], 
-                iterations                   = self.iterations,
-                alpha                        = self.learning_rate,
-                regularization               = self.regularization,
-                weight_matrix                = self.model,
-                batch_size                   = self.batch_size,
-                iteration_patience           = self.iteration_patience,            
-                iteration_patience_threshold = self.iteration_patience_threshold)
+            self.model,iteration_error,error_iter_array = self.optimization_routine.optimize( 
+                training_features            = trainX[skip:end], 
+                training_targets             = trainY[skip:end], 
+                weight_matrix                = self.model
+            )
         
             if numpy.abs(numpy.abs(iteration_error)-last_iteration_error) < self.slice_patience_threshold:
                 patience_counter = patience_counter+1
