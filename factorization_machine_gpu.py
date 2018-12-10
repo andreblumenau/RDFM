@@ -59,16 +59,11 @@ class FactorizationMachineGPU:
         for j in range(slice_count):#(slice_count):        
             skip = j*self.slice_size    
             end = ((j+1)*self.slice_size)      
-            self.model,iteration_error,error_iter_array = optimize( 
-                trainX[skip:end], 
-                trainY[skip:end], 
-                iterations                   = self.iterations,
-                alpha                        = self.learning_rate,
-                regularization               = self.regularization,
-                weight_matrix                = self.model,
-                batch_size                   = self.batch_size,
-                iteration_patience           = self.iteration_patience,            
-                iteration_patience_threshold = self.iteration_patience_threshold)
+            self.model,iteration_error,error_iter_array = self.optimization_routine.optimize( 
+                training_features            = trainX[skip:end], 
+                training_targets             = trainY[skip:end], 
+                weight_matrix                = self.model
+            )
         
             if cupy.abs(cupy.abs(iteration_error)-last_iteration_error) < self.slice_patience_threshold:
                 patience_counter = patience_counter+1

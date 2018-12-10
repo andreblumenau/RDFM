@@ -1,4 +1,9 @@
 import numpy
+import array
+###########################
+import scipy
+from scipy import sparse
+from scipy.sparse import csr_matrix, hstack,vstack
 
 class CPULearning:
     def __init__(self,iterations, alpha, regularization,batch_size,iteration_patience,iteration_patience_threshold):
@@ -15,13 +20,21 @@ class CPULearning:
         
         tensor_of_x_features = numpy.tile(0.0,(N,1,training_features.shape[1]))
         tensor_of_x_squared = numpy.tile(0.0,(N,training_features.shape[1],training_features.shape[1]))
+        
+        tensor_of_x_features_list =[]
+        tensor_of_x_squared_list =[]
     
         matrix_set_diag_to_zero = numpy.tile(1.0,(training_features.shape[1],training_features.shape[1]))
         numpy.fill_diagonal(matrix_set_diag_to_zero,0.0)
     
         for i in range(N):
-            tensor_of_x_features[i]=training_features[i]
-            tensor_of_x_squared[i]=training_features[i].dot(training_features[i])
+            tensor_of_x_features_list.append(training_features[i])
+            tensor_of_x_squared_list.append(training_features[i].dot(training_features[i].transpose()))
+            
+        print("tensor_of_x_squared_list[0].shape = \n",tensor_of_x_squared_list[0].shape)
+            
+        tensor_of_x_features = numpy.array(tensor_of_x_features_list)
+        tensor_of_x_squared = numpy.array(ttensor_of_x_squared_list)
     
         historical_gradient=numpy.tile(0.0,(weight_matrix.shape))
         tensor_of_x_squared = tensor_of_x_squared*matrix_set_diag_to_zero
@@ -93,3 +106,4 @@ class CPULearning:
             last_iteration_error = numpy.abs(error_iter_array[i])
             
         return weight_matrix,error_iter_array.mean(),error_iter_array#return array with the most errors
+        

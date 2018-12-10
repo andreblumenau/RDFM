@@ -1,11 +1,11 @@
 import numpy
 import time
 import winsound
-import pre_process
-import factorization_machine
-from factorization_machine import FactorizationMachine
-from pre_process import DataProcessing
-from metrics import evaluate
+import pre_process_sparse
+import factorization_machine_sparse
+from factorization_machine_sparse import FactorizationMachine
+from pre_process_sparse import DataProcessing
+from metrics_sparse import evaluate
 import csv
 
 dataset_size = 999    
