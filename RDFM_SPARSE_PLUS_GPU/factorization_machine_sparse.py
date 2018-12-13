@@ -82,6 +82,7 @@ class FactorizationMachine:
         if error_buffer > error_by_index.shape[0]:
             error_buffer = error_by_index.shape[0]
         
+        print("error_by_index \n",error_by_index)
         self.smallest_error = error_by_index[0:error_buffer,1].astype(numpy.int32)
         self.greatest_error = error_by_index[(len(error_by_index)-error_buffer):len(error_by_index),1].astype(numpy.int32)
         self.error_buffer = error_buffer

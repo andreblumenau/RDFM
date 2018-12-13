@@ -27,12 +27,12 @@ print("dataset_partition_size =",dataset_partition_size)
     
 for i in range(number_of_instances):
     factorization_machine = FactorizationMachine(
-        iterations                      = 10,
+        iterations                      = 20,
         learning_rate                   = 1/(100),
         latent_vectors                  = 4,
         regularization                  = 1/(1000),
         slice_size                      = 10,
-        batch_size                      = 5,
+        batch_size                      = 10,
         slice_patience                  = 5,
         iteration_patience              = 5,
         slice_patience_threshold        = 0.0000001,

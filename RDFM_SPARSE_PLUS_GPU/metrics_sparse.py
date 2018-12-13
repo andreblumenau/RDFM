@@ -3,13 +3,14 @@ import scipy
 from scipy import sparse
 
 def fm_get_p(X, W):
-    #xa =numpy.array([X])
-    #VX =  xa.dot(W)
-    #VX_square = (xa*xa).dot(W*W)
-    #phi = 0.5*(VX*VX - VX_square).sum()
-    
     VX = X.dot(W)
-    VX_square = (X)
+    X_Squared = X.multiply(X)#scipy.sparse.csr_matrix.transpose(X)
+    W_Squared = W*W
+    VX_square = X_Squared.dot(W_Squared)
+    
+    phi = 0.5*(VX*VX-VX_square).sum()
+    #print("phi.shape",phi.shape)
+    #print("phi",phi)
     #tensor_of_x_squared.append(csr_matrix.transpose(training_features[i]).dot(training_features[i]))
     
 
@@ -45,15 +46,22 @@ def table_ratings(X,Y):
     return table_t
 
 def RMSE(p_y,y):
+    y = y.todense()
     subtraction = numpy.subtract(numpy.array(p_y),numpy.transpose(y))
     rmse = numpy.abs(subtraction).sum()/len(y)
+    
+    print("rmse = ",rmse)
     return rmse
 
 def error_by_index(p_y,y):
+    y = numpy.array(y.todense())
     subtraction = numpy.subtract(numpy.array(p_y),numpy.transpose(y))
+    print("subtraction.shape",subtraction.shape)
     enumerate = numpy.arange(0,subtraction.shape[1],1)
     error_by_index = numpy.vstack((numpy.abs(subtraction[0]),enumerate)).transpose()
     error_by_index = error_by_index[error_by_index[:,0].argsort()]
+    
+    print("error_by_index.shape",error_by_index.shape)
     return error_by_index
     
 def evaluate(x, y, w):

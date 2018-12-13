@@ -29,11 +29,11 @@ class CPULearning:
     
         for i in range(N):
             tensor_of_x_features.append(training_features[i])
-            tensor_of_x_squared.append(csr_matrix.transpose(training_features[i]).dot(training_features[i]))
+            tensor_of_x_squared.append(training_features[i].multiply(training_features[i]))#csr_matrix.transpose(training_features[i]).dot(training_features[i]))
         
         for i in range(N):        
             tensor_of_x_squared[i].setdiag(0)
-            tensor_of_x_squared[i] = tensor_of_x_squared[i]#*matrix_set_diag_to_zero
+            tensor_of_x_squared[i] = tensor_of_x_squared[i]
             matrix = tensor_of_x_features[i].copy()
             matrix.data **=2            
             tensor_of_x_features_squared.append(matrix)
@@ -87,7 +87,7 @@ class CPULearning:
                 
                 for k in idxs:
                     tensor_of_proto_vx[k]=tensor_of_x_features[k].dot(weight_matrix)
-                    print("tensor_of_proto_vx[k].shape = ",tensor_of_proto_vx[k].shape)#(2,2)
+                    #print("tensor_of_proto_vx[k].shape = ",tensor_of_proto_vx[k].shape)#(2,2)
                     tensor_of_proto_square[k]=(tensor_of_x_features_squared[k].dot(weight_matrix_square))
                     vector_of_prediction[k]=((tensor_of_proto_vx[k]*tensor_of_proto_vx[k])- tensor_of_proto_square[k]).dot(vector_of_sum).sum(axis=1)*0.5
                 
@@ -99,6 +99,7 @@ class CPULearning:
                 b = numpy.array(b)
     
                 error_sum = error_sum+b.mean()
+                #print(b.mean())
                 
                 
                 vector_of_gradient = -2*b
@@ -117,7 +118,8 @@ class CPULearning:
         
                 #ADAGRAD UPDATE
                 historical_gradient += numpy.multiply(update_step,update_step)
-                weight_matrix -= self.alpha/(numpy.multiply((numpy.sqrt(historical_gradient)),update_step)+0.000001)           
+                weight_matrix -= self.alpha/(numpy.sqrt(historical_gradient)) * update_step
+                #weight_matrix -= self.alpha/(numpy.multiply((numpy.sqrt(historical_gradient)),update_step)+0.000001)           
     
             error_iter_array[i] = error_sum/batch_count
     
