@@ -18,30 +18,37 @@ class CPULearning:
         N = training_features.shape[0]
         M = weight_matrix.shape[1]
         
-        tensor_of_x_features = numpy.tile(0.0,(N,1,training_features.shape[1]))
-        tensor_of_x_squared = numpy.tile(0.0,(N,training_features.shape[1],training_features.shape[1]))
-        
-        tensor_of_x_features_list =[]
-        tensor_of_x_squared_list =[]
+        tensor_of_x_features = []
+        tensor_of_x_squared  = []
+        tensor_of_x_features_squared=[]
     
         matrix_set_diag_to_zero = numpy.tile(1.0,(training_features.shape[1],training_features.shape[1]))
         numpy.fill_diagonal(matrix_set_diag_to_zero,0.0)
     
-        for i in range(N):
-            tensor_of_x_features_list.append(training_features[i])
-            tensor_of_x_squared_list.append(training_features[i].dot(training_features[i].transpose()))
-            
-        print("tensor_of_x_squared_list[0].shape = \n",tensor_of_x_squared_list[0].shape)
-            
-        tensor_of_x_features = numpy.array(tensor_of_x_features_list)
-        tensor_of_x_squared = numpy.array(ttensor_of_x_squared_list)
+        historical_gradient = numpy.tile(0.0,(weight_matrix.shape))
     
-        historical_gradient=numpy.tile(0.0,(weight_matrix.shape))
-        tensor_of_x_squared = tensor_of_x_squared*matrix_set_diag_to_zero
-        tensor_of_x_features_squared = tensor_of_x_features*tensor_of_x_features
+        for i in range(N):
+            tensor_of_x_features.append(training_features[i])
+            tensor_of_x_squared.append(csr_matrix.transpose(training_features[i]).dot(training_features[i]))
         
-        tensor_of_proto_vx = numpy.tile(0.0,(N,1,M))
-        tensor_of_proto_square = numpy.tile(0.0,(N,1,M))
+        for i in range(N):        
+            tensor_of_x_squared[i].setdiag(0)
+            tensor_of_x_squared[i] = tensor_of_x_squared[i]#*matrix_set_diag_to_zero
+            matrix = tensor_of_x_features[i].copy()
+            matrix.data **=2            
+            tensor_of_x_features_squared.append(matrix)
+        
+        tensor_of_proto_vx     = []
+        tensor_of_proto_square = []
+        vrau                   = []
+        b = []        
+        
+        for i in range(N):
+            tensor_of_proto_vx.append(sparse.eye(2, dtype=numpy.float32)) #= array.array('i',(0,)*N)
+            tensor_of_proto_square.append(sparse.eye(2, dtype=numpy.float32)) #= array.array('i',(0,)*N)
+            vrau.append(sparse.eye(2, dtype=numpy.float32))
+            b.append(0)
+            
         vector_of_prediction = numpy.tile(0.0,N)
         vector_of_sum = numpy.tile(1.0,(M,1))
         vector_of_gradient = numpy.tile(0.0,N)
@@ -52,7 +59,7 @@ class CPULearning:
         batch_count = numpy.floor(N/self.batch_size).astype(numpy.int32)
         seed = 0
         
-        idxs = numpy.linspace(0,self.batch_size,self.batch_size,dtype=numpy.int32)  
+        #idxs = numpy.linspace(0,self.batch_size,N,dtype=numpy.int32)  
     
         patience_counter = 0
         last_iteration_error = 0
@@ -72,26 +79,45 @@ class CPULearning:
             
             for j in range(batch_count):
                 init = j*self.batch_size
-                ending = (j+1)*self.batch_size
+                ending = min(len(random_idx_list),(j+1)*self.batch_size)
     
-                idxs = random_idx_list[init:ending]
-            
+                idxs = random_idx_list[init:ending]            
                 weight_matrix[numpy.abs(weight_matrix)<0.0000001]=0 
                 weight_matrix_square = weight_matrix*weight_matrix
-                tensor_of_proto_vx = numpy.tensordot(tensor_of_x_features[idxs],weight_matrix,axes=1)
-                tensor_of_proto_square = numpy.tensordot(tensor_of_x_features_squared[idxs],weight_matrix_square,axes=1)
-                vector_of_prediction = numpy.tensordot(((tensor_of_proto_vx*tensor_of_proto_vx) - tensor_of_proto_square),vector_of_sum,axes=1).sum(axis=1)*0.5
-                b = training_targets[idxs]-vector_of_prediction
+                
+                for k in idxs:
+                    tensor_of_proto_vx[k]=tensor_of_x_features[k].dot(weight_matrix)
+                    print("tensor_of_proto_vx[k].shape = ",tensor_of_proto_vx[k].shape)#(2,2)
+                    tensor_of_proto_square[k]=(tensor_of_x_features_squared[k].dot(weight_matrix_square))
+                    vector_of_prediction[k]=((tensor_of_proto_vx[k]*tensor_of_proto_vx[k])- tensor_of_proto_square[k]).dot(vector_of_sum).sum(axis=1)*0.5
+                
+                vector_of_prediction = vector_of_prediction.reshape(len(vector_of_prediction),1)
+                
+                for k in idxs:
+                    b[k] =  numpy.asscalar(training_targets[k]-vector_of_prediction[k])
+    
+                b = numpy.array(b)
     
                 error_sum = error_sum+b.mean()
                 
+                
                 vector_of_gradient = -2*b
-                vrau = numpy.tensordot(tensor_of_x_squared[idxs],weight_matrix,axes=1)
-                update_step = ((vector_of_gradient.T*vrau.T).T).sum(axis=0)+weight_matrix_square*self.regularization
+                for k in idxs:
+                    vrau[k] = tensor_of_x_squared[k].dot(weight_matrix)
+                
+                updates = None
+                
+                for k in idxs:
+                    if updates is not None:
+                        updates = updates+(vector_of_gradient[k].T*vrau[k].T).T
+                    else:
+                        updates = (vector_of_gradient[k].T*vrau[k].T).T
+                    
+                update_step = updates+weight_matrix_square*self.regularization
         
                 #ADAGRAD UPDATE
-                historical_gradient += update_step * update_step
-                weight_matrix -= self.alpha/(numpy.sqrt(historical_gradient)) * update_step#+0.000001            
+                historical_gradient += numpy.multiply(update_step,update_step)
+                weight_matrix -= self.alpha/(numpy.multiply((numpy.sqrt(historical_gradient)),update_step)+0.000001)           
     
             error_iter_array[i] = error_sum/batch_count
     
@@ -106,4 +132,3 @@ class CPULearning:
             last_iteration_error = numpy.abs(error_iter_array[i])
             
         return weight_matrix,error_iter_array.mean(),error_iter_array#return array with the most errors
-        

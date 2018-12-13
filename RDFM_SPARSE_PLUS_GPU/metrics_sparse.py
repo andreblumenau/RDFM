@@ -1,10 +1,17 @@
 import numpy
+import scipy
+from scipy import sparse
 
 def fm_get_p(X, W):
-    xa = numpy.array([X])
-    VX =  xa.dot(W)
-    VX_square = (xa*xa).dot(W*W)
-    phi = 0.5*(VX*VX - VX_square).sum()
+    #xa =numpy.array([X])
+    #VX =  xa.dot(W)
+    #VX_square = (xa*xa).dot(W*W)
+    #phi = 0.5*(VX*VX - VX_square).sum()
+    
+    VX = X.dot(W)
+    VX_square = (X)
+    #tensor_of_x_squared.append(csr_matrix.transpose(training_features[i]).dot(training_features[i]))
+    
 
     return phi
 
