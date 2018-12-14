@@ -78,7 +78,7 @@ class DataProcessing:
         #print(features[1])
         
         end_reading = time.time()
-        print(round((end_reading-start_reading)/60,2)," minutos.")
+        #print(round((end_reading-start_reading)/60,2)," minutos.")
         #print(lines[0])
         return features,target
     

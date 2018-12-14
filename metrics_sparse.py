@@ -50,24 +50,23 @@ def RMSE(p_y,y):
     subtraction = numpy.subtract(numpy.array(p_y),numpy.transpose(y))
     rmse = numpy.abs(subtraction).sum()/len(y)
     
-    print("rmse = ",rmse)
+    #print("rmse = ",rmse)
     return rmse
 
 def error_by_index(p_y,y):
     y = numpy.array(y.todense())
     subtraction = numpy.subtract(numpy.array(p_y),numpy.transpose(y))
-    print("subtraction.shape",subtraction.shape)
+    #print("subtraction.shape",subtraction.shape)
     enumerate = numpy.arange(0,subtraction.shape[1],1)
     error_by_index = numpy.vstack((numpy.abs(subtraction[0]),enumerate)).transpose()
     error_by_index = error_by_index[error_by_index[:,0].argsort()]
     
-    print("error_by_index.shape",error_by_index.shape)
     return error_by_index
     
-def evaluate(x, y, w):
-    print('evaluation')
-    print('min y', min(y))
-    print('max y', max(y))
+def evaluate(x, y, w,name=""):
+    # print('evaluation')
+    # print('min y', min(y))
+    # print('max y', max(y))
     p_y = []
 
     for i in range(x.shape[0]): 
@@ -80,7 +79,6 @@ def evaluate(x, y, w):
     rmse = RMSE(p_y,y)#,(perf.trace()/x.shape[0]),table_ratings(p_y, y)
     error_list = error_by_index(p_y,y)
     #print('RMSE: ',rmse)
-    print('{"metric": "RMSE", "value": '+str(numpy.round(rmse,5))+'}')
     return rmse,error_list
     #print('Performance: \n', perf)
     #print('Accuracy:',(perf.trace()/x.shape[0]))
@@ -96,6 +94,6 @@ def evaluate_rmse(x, y, w):
     # print("x = \n",x)
     # print("y = \n",y)
     #print('RMSE: ',rmse)
-    print('{"metric": "RMSE", "value": '+str(numpy.round(rmse,5))+'}')
+    #print('{"metric": "RMSE", "value": '+str(numpy.round(rmse,5))+'}')
     return rmse   
 

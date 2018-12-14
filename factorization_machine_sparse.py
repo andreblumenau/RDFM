@@ -13,8 +13,17 @@ class FactorizationMachine:
         return model
     
     def __init__(self,iterations,learning_rate,latent_vectors,regularization,slice_size,batch_size,
-    slice_patience,iteration_patience,slice_patience_threshold,iteration_patience_threshold):    
-
+    slice_patience,iteration_patience,slice_patience_threshold,iteration_patience_threshold,name="",
+    random_failed=False,crash_failed=False,malicious_failed=False):    
+        self.name=name
+        self.random_failed    = random_failed
+        self.crash_failed     = crash_failed
+        self.malicious_failed = malicious_failed
+        
+        if self.random_failed    : self.name = self.name + " (RANDOM OUTPUT)"
+        if self.crash_failed     : self.name = self.name + " (CRASH)"
+        if self.malicious_failed : self.name = self.name + " (MALICIOUS)"
+        
         if slice_size < batch_size:
             raise ValueError('"slice_size" parameter cannot be smaller than "batch_size" parameter.')
             
@@ -38,8 +47,17 @@ class FactorizationMachine:
         self.slice_patience                 = slice_patience             
         self.slice_patience_threshold       = slice_patience_threshold   
 
-    def learn(self,trainX,trainY):
+    def learn(self,trainX,trainY):    
+        if self.random_failed:
+            self.model = self.get_random_weight_matrix(trainX.shape[1],self.latent_vectors)
+
+        if self.crash_failed:
+            self.model = None
+            return        
     
+        if self.malicious_failed:
+            trainY = scipy.sparse.csr_matrix(1-trainY.todense())
+        
         skip = 0
         end = 0   
         patience_counter = 0
@@ -47,7 +65,7 @@ class FactorizationMachine:
         last_iteration_error = 0
     
         slice_count =  numpy.floor(trainX.shape[0]/self.slice_size).astype(numpy.int32)
-        print("slice_count = ",slice_count)
+        #print("slice_count = ",slice_count)
         
         if self.slice_patience >= slice_count:
             raise ValueError('"slice_patience" parameter cannot be smaller than "slice_count" parameter.')            
@@ -77,12 +95,12 @@ class FactorizationMachine:
             gc.collect()
 
     def predict(self,validationX,validationY,error_buffer=5):
-        rmse,error_by_index = evaluate(validationX,validationY,self.model)
+        rmse,error_by_index = evaluate(validationX,validationY,self.model,name=self.name)
         
         if error_buffer > error_by_index.shape[0]:
             error_buffer = error_by_index.shape[0]
         
-        print("error_by_index \n",error_by_index)
+        #print("error_by_index \n",error_by_index)
         self.smallest_error = error_by_index[0:error_buffer,1].astype(numpy.int32)
         self.greatest_error = error_by_index[(len(error_by_index)-error_buffer):len(error_by_index),1].astype(numpy.int32)
         self.error_buffer = error_buffer

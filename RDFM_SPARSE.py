@@ -13,6 +13,8 @@ sample_start = 0
 sample_end = 0
 turns = 2
 number_of_instances = 2
+number_of_random_failed = 0
+number_of_crash_failed = 0
 instance_list = []
 
 print("Loading database...")
@@ -31,12 +33,13 @@ for i in range(number_of_instances):
         learning_rate                   = 1/(100),
         latent_vectors                  = 4,
         regularization                  = 1/(1000),
-        slice_size                      = 10,
-        batch_size                      = 10,
+        slice_size                      = 20,
+        batch_size                      = 20,
         slice_patience                  = 5,
         iteration_patience              = 5,
         slice_patience_threshold        = 0.0000001,
-        iteration_patience_threshold    = 0.0000001)
+        iteration_patience_threshold    = 0.0000001,
+        name                            = str(i))
         
     instance_list.append(factorization_machine)
     
@@ -55,6 +58,7 @@ for i in range(turns):
     
         instance_list[j].learn(trainX,trainY)
         rmse = instance_list[j].predict(validationX,validationY)
+        print('{"metric": "RMSE '+instance_list[j].name+'", "value": '+str(numpy.round(rmse,5))+'}')
         
         weight_matrices.append(instance_list[j].model)
     
@@ -62,7 +66,7 @@ for i in range(turns):
         sample_end = sample_end + dataset_partition_size
         
     tardigrade_matrices = numpy.array(weight_matrices)    
-    print("tardigrade_matrices.shape",tardigrade_matrices.shape)
+    #print("tardigrade_matrices.shape",tardigrade_matrices.shape)
         
     for j in range(number_of_instances):
         #numpy.delete creates a new list without the instance_list[j] model
