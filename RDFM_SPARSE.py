@@ -16,8 +16,8 @@ sample_end = 0
 turns = 2
 number_of_instances = 6
 number_of_random_failed = 1
-number_of_crash_failed = 0
-number_of_malicious_failed = 0
+number_of_crash_failed = 1
+number_of_malicious_failed = 1
 instance_list = []
 
 if (number_of_random_failed+number_of_crash_failed+number_of_malicious_failed) > number_of_instances:
@@ -92,7 +92,13 @@ for i in range(turns):
     
         instance_list[j].learn(trainX,trainY)
         rmse = instance_list[j].predict(validationX,validationY)
-        print('{"metric": "RMSE '+instance_list[j].name+'", "value": '+str(numpy.round(rmse,5))+'}')
+        rmse_str = ""
+        if rmse is None:
+            rmse_str = "None"
+        else:
+            rmse_str = str(numpy.round(rmse,5))
+        
+        print('{"metric": "RMSE '+instance_list[j].name+'", "value": '+rmse_str+'}')
         
         weight_matrices.append(instance_list[j].model)
     
@@ -103,7 +109,7 @@ for i in range(turns):
     #print("tardigrade_matrices.shape",tardigrade_matrices.shape)
         
     for j in range(number_of_instances):
-        #numpy.delete creates a new list without the instance_list[j] model
+        #numpy.delete creates a new list without the instance_list[j] model (removes FM own model so it wont be considered 2 times)
         instance_list[j].tardigrade(data_handler,numpy.delete(tardigrade_matrices,j,axis=0))
 
 end = time.time()    

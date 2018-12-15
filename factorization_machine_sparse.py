@@ -5,6 +5,8 @@ import gc
 from pre_process_sparse import DataProcessing #Talvez desnecessário
 from metrics_sparse import evaluate
 from metrics_sparse import evaluate_rmse
+import scipy
+from scipy import sparse
 
 class FactorizationMachine:
     def get_random_weight_matrix(self,number_of_features,number_of_latent_vectors):
@@ -57,7 +59,8 @@ class FactorizationMachine:
             return        
     
         if self.malicious_failed:
-            trainY = scipy.sparse.csr_matrix(1-trainY.todense())
+            #Inverts target matrix to optmize for error
+            trainX = scipy.sparse.csr_matrix(1-trainX.todense())
         
         skip = 0
         end = 0   
@@ -96,6 +99,8 @@ class FactorizationMachine:
             gc.collect()
 
     def predict(self,validationX,validationY,error_buffer=5):
+        if self.crash_failed: return None
+        
         rmse,error_by_index = evaluate(validationX,validationY,self.model,name=self.name)
         
         if error_buffer > error_by_index.shape[0]:
@@ -111,6 +116,14 @@ class FactorizationMachine:
         return rmse
             
     def tardigrade(self,data_handler,neighbourhood_models):
+        if self.crash_failed: return
+
+        boolean_array_of_is_none = [i is None for i in neighbourhood_models]
+        
+        if True in boolean_array_of_is_none:
+            indexes_of_none = boolean_array_of_is_none.index(True)
+            neighbourhood_models = numpy.delete(neighbourhood_models,indexes_of_none)
+    
         indexes = numpy.hstack((self.smallest_error,self.greatest_error))        
         features,target = data_handler.features_and_target_from_indexes(indexes)
         index_and_rmse = numpy.tile(1,(neighbourhood_models.shape[0],2))
@@ -124,6 +137,6 @@ class FactorizationMachine:
         tensor[0] = self.model
         neighbourhood_models = neighbourhood_models[index_and_rmse[0:max(index_and_rmse.shape[0],self.error_buffer),1]]
         
-        self.model = numpy.vstack((neighbourhood_models,tensor)).mean(axis=0)
+        self.model = (neighbourhood_models).sum(0)/len(neighbourhood_models)
         return
         
