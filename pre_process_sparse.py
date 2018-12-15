@@ -54,11 +54,6 @@ class DataProcessing:
         shuffle(lines)
         table_dense = numpy.stack(lines)
         
-        #table = table.tocsr()
-                
-        #print(table.shape)
-        #print(table[1,:])
-        
         target = table_dense[:,self.index_for_target_column].copy()
         target = target.view(numpy.float64).reshape(target.size,1)  
     
@@ -72,21 +67,13 @@ class DataProcessing:
         target=sparse.csr_matrix(target)        
         features=sparse.csr_matrix(features)      
 
-        #print(features.shape)
-        #print(target.shape)
-        #print(features[1,:])        
-        #print(features[1])
-        
         end_reading = time.time()
-        #print(round((end_reading-start_reading)/60,2)," minutos.")
-        #print(lines[0])
         return features,target
     
     def process_csv_data(self,lineStart,lineEnd):
         seventyPercent = int((lineEnd-lineStart)*0.7)
         
         training_indexes = self.random_sorted_indexes[lineStart:(lineStart+seventyPercent)]
-        #print("training_indexes = ",training_indexes.shape)
         training_features,training_target = self.features_and_target_from_indexes(training_indexes)  
         
         validation_indexes = self.random_sorted_indexes[(lineStart+seventyPercent+1):lineEnd]
@@ -99,32 +86,22 @@ class DataProcessing:
         lines_set = set(lines_list)
         for line_number, row in enumerate(csv_reader):
             if line_number in lines_set:
-                #yield row#line_number, row
                 yield row
                 lines_set.remove(line_number)
                 # Stop when the set is empty
                 if not lines_set:
                     break  
     
-    # scipy.sparse.csr_matrix
     def read_my_lines_float(self,csv_reader, lines_list):
-        # make sure every line number shows up only once:
-        #lines_set = set(lines_list)
         for line_number, row in enumerate(csv_reader):
-            #if line_number in lines_set:
             if line_number == lines_list[0]:
-                #yield row#line_number, row
                 yield [ float(i) for i in row ]
-                #lines_set.remove(line_number)
-                #lines_list.remove()
                 lines_list.pop(0)
                 # Stop when the set is empty
                 if not lines_list:
                     break
                     
     def read_my_lines_sparse(self,csv_reader, lines_list):
-        # make sure every line number shows up only once:
-        #lines_set = set(lines_list)
         list_of_floats = []
         
         if type(lines_list).__module__==numpy.__name__:
@@ -135,14 +112,8 @@ class DataProcessing:
             lines_list.remove(0)
         
         for line_number, row in enumerate(csv_reader):
-            #if line_number in lines_set:
             if line_number == lines_list[0]:
-                #yield row#line_number, row
-                #list_of_floats = [ float(i) for i in row ]
                 yield [ float(i) for i in row ]
-                #yield scipy.sparse.csr_matrix(list_of_floats)
-                #lines_set.remove(line_number)
-                #lines_list.remove()
                 lines_list.pop(0)
                 # Stop when the set is empty
                 if not lines_list:
