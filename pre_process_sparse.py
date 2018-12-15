@@ -8,6 +8,12 @@ from random import shuffle
 import scipy
 from scipy import sparse
 from scipy.sparse import csr_matrix, hstack,vstack
+###########################
+import warnings
+from scipy.sparse import (spdiags, SparseEfficiencyWarning, csc_matrix,
+    csr_matrix, isspmatrix, dok_matrix, lil_matrix, bsr_matrix)
+warnings.simplefilter('ignore',SparseEfficiencyWarning)
+###########################
 
 class DataProcessing:
     def __init__(self,path,total_lines,delimiter_char,target_column):
