@@ -48,7 +48,8 @@ def table_ratings(X,Y):
 def RMSE(p_y,y):
     y = y.todense()
     subtraction = numpy.subtract(numpy.array(p_y),numpy.transpose(y))
-    rmse = numpy.abs(subtraction).sum()/len(y)
+    #RE-SCALES ERROR TO ORIGINAL RATINGS INTERVAL (0-5) INSTEAD OF FEATURE INTEVAL (0-1)
+    rmse = numpy.abs(subtraction*5).sum()/len(y)
     
     #print("rmse = ",rmse)
     return rmse

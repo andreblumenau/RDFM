@@ -50,6 +50,7 @@ class FactorizationMachine:
     def learn(self,trainX,trainY):    
         if self.random_failed:
             self.model = self.get_random_weight_matrix(trainX.shape[1],self.latent_vectors)
+            return
 
         if self.crash_failed:
             self.model = None
@@ -67,7 +68,7 @@ class FactorizationMachine:
         slice_count =  numpy.floor(trainX.shape[0]/self.slice_size).astype(numpy.int32)
         #print("slice_count = ",slice_count)
         
-        if self.slice_patience >= slice_count:
+        if self.slice_patience <= slice_count:
             raise ValueError('"slice_patience" parameter cannot be smaller than "slice_count" parameter.')            
         
         if self.model is None:

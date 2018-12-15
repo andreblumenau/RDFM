@@ -7,15 +7,41 @@ from factorization_machine_sparse import FactorizationMachine
 from pre_process_sparse import DataProcessing
 from metrics_sparse import evaluate
 import csv
+import random
+from random import shuffle
 
 dataset_size = 999    
 sample_start = 0
 sample_end = 0
 turns = 2
-number_of_instances = 2
-number_of_random_failed = 0
+number_of_instances = 6
+number_of_random_failed = 1
 number_of_crash_failed = 0
+number_of_malicious_failed = 0
 instance_list = []
+
+if (number_of_random_failed+number_of_crash_failed+number_of_malicious_failed) > number_of_instances:
+    raise ValueError("Number of unhealthy nodes cannnot sum to a number greater than the total number_of_instances")
+
+index_list = list(range(number_of_instances))
+random_failed_list = []
+random_failed_list = []
+crash_failed_list = []
+malicious_failed = []
+shuffle(index_list)
+
+for i in range(number_of_random_failed):
+    random_failed_list.append(index_list.pop(0))
+    
+for i in range(number_of_crash_failed):
+    crash_failed_list.append(index_list.pop(0))
+    
+for i in range(number_of_malicious_failed):
+    malicious_failed.append(index_list.pop(0))
+    
+#random_node
+#crash_node    
+#malicious_node    
 
 print("Loading database...")
 data_handler = DataProcessing(
@@ -23,11 +49,16 @@ data_handler = DataProcessing(
     total_lines = dataset_size,
     delimiter_char = ",",
     target_column = "Rating")
-
+    
 dataset_partition_size = int(numpy.floor(999/(turns*number_of_instances)))
 print("dataset_partition_size =",dataset_partition_size)    
     
 for i in range(number_of_instances):
+    #Assumes that an index never gonna be in multiple lists at the same time
+    random_node     = i in random_failed_list
+    crash_node      = i in crash_failed_list
+    malicious_node  = i in malicious_failed
+
     factorization_machine = FactorizationMachine(
         iterations                      = 20,
         learning_rate                   = 1/(100),
@@ -39,7 +70,10 @@ for i in range(number_of_instances):
         iteration_patience              = 5,
         slice_patience_threshold        = 0.0000001,
         iteration_patience_threshold    = 0.0000001,
-        name                            = str(i))
+        name                            = str(i),
+        random_failed                   = random_node,
+        crash_failed                    = crash_node,
+        malicious_failed                = malicious_node)
         
     instance_list.append(factorization_machine)
     
