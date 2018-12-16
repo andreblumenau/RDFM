@@ -67,12 +67,15 @@ class FactorizationMachine:
         patience_counter = 0
         iteration_error = 0
         last_iteration_error = 0
-    
-        slice_count =  numpy.floor(trainX.shape[0]/self.slice_size).astype(numpy.int32)
-        #print("slice_count = ",slice_count)
+            
+        print("trainX.shape[0] = ",trainX.shape[0])
+        slice_count =  max(numpy.floor(trainX.shape[0]/self.slice_size).astype(numpy.int32),1)
         
-        if self.slice_patience <= slice_count:
-            raise ValueError('"slice_patience" parameter cannot be smaller than "slice_count" parameter.')            
+        
+        if self.slice_patience > slice_count:
+            print("slice_count = ",slice_count)
+            print("slice_patience = ",self.slice_patience)
+            raise ValueError('"slice_count" parameter cannot be smaller than "slice_patience" parameter.')            
         
         if self.model is None:
             self.model = self.get_random_weight_matrix(trainX.shape[1],self.latent_vectors)
