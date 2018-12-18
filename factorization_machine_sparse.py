@@ -115,9 +115,12 @@ class FactorizationMachine:
         
         return rmse
             
-    def tardigrade(self,data_handler,neighbourhood_models):
+    def tardigrade(self,data_handler,neighbourhood_models,top_n_models = 5):
         if self.crash_failed: return
-
+        if self.malicious_failed: return
+        if self.random_failed: return        
+        if len(neighbourhood_models) <= 1: return        
+        
         boolean_array_of_is_none = [i is None for i in neighbourhood_models]
         
         if True in boolean_array_of_is_none:
@@ -135,7 +138,7 @@ class FactorizationMachine:
         index_and_rmse = index_and_rmse[index_and_rmse[:,0].argsort()]
         tensor = numpy.tile(0,(1,self.model.shape[0],self.model.shape[1]))
         tensor[0] = self.model
-        neighbourhood_models = neighbourhood_models[index_and_rmse[0:max(index_and_rmse.shape[0],self.error_buffer),1]]
+        neighbourhood_models = neighbourhood_models[index_and_rmse[0:max(index_and_rmse.shape[0],top_n_models),1]]
         
         self.model = (neighbourhood_models).sum(0)/len(neighbourhood_models)
         return

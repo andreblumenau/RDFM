@@ -60,11 +60,11 @@ for i in range(number_of_instances):
         latent_vectors                  = 6,
         regularization                  = 1/(1000),
         slice_size                      = dataset_partition_size, #15000,#RAM BUFFER FOR MATRICES
-        batch_size                      = 1000,  #LEARNING MINI-BATCH-SIZE
+        batch_size                      = 20,  #LEARNING MINI-BATCH-SIZE
         slice_patience                  = 1,
         iteration_patience              = 5,
-        slice_patience_threshold        = 0.00001,
-        iteration_patience_threshold    = 0.0001,
+        slice_patience_threshold        = 0.000001,
+        iteration_patience_threshold    = 0.00001,
         #slice_patience_threshold        = 0.0000001,
         #iteration_patience_threshold    = 0.0000001,
         name                            = str(i),
@@ -94,7 +94,7 @@ for i in range(turns):
             instance_list[j].learn(trainX,trainY)
             rmse = instance_list[j].predict(validationX,validationY)
             rmse_str = str(numpy.round(rmse,5))
-        
+            
         print('{"metric": "RMSE '+instance_list[j].name+'", "value": '+rmse_str+'}')
         
         weight_matrices.append(instance_list[j].model)
