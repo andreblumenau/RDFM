@@ -118,7 +118,8 @@ class FactorizationMachine:
     def tardigrade(self,data_handler,neighbourhood_models,top_n_models = 5):
         if self.crash_failed: return
         if self.malicious_failed: return
-        if self.random_failed: return        
+        if self.random_failed: return
+        #TODO: CORRIGIR ISSO
         if len(neighbourhood_models) <= 1: return        
         
         boolean_array_of_is_none = [i is None for i in neighbourhood_models]

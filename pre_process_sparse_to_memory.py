@@ -59,9 +59,9 @@ class DataProcessing:
         return training_features,training_target,validation_features,validation_target,validation_indexes
     
     def features_and_target_from_indexes(self,indexes):
-        print("self.in_memory_dataset.shape = ",self.in_memory_dataset.shape)
+        #print("self.in_memory_dataset.shape = ",self.in_memory_dataset.shape)
         table_dense = self.in_memory_dataset[indexes].todense()
-        print("table_dense.shape = ",table_dense.shape)
+        #print("table_dense.shape = ",table_dense.shape)
         
         target = table_dense[:,self.index_for_target_column].copy()
         target = target.view(numpy.float64).reshape(target.size,1)  
@@ -93,20 +93,20 @@ class DataProcessing:
             file = open(self.path,"rb")
             #file = open(self.path,"rb")
             skip = i*segment_size
-            print("self.indexes[skip:(skip+segment_size)] = ",self.indexes[skip:(skip+segment_size)])
+            #print("self.indexes[skip:(skip+segment_size)] = ",self.indexes[skip:(skip+segment_size)])
             file_generator = self.read_my_lines_sparse_numpy(file,self.indexes[skip:(skip+segment_size)])
             
-            print("skip = ",skip)
-            print("take = ",(skip+segment_size))
+            #print("skip = ",skip)
+            #print("take = ",(skip+segment_size))
             if self.in_memory_dataset is None:        
                 temp = numpy.loadtxt(file_generator,delimiter=",")
                 self.in_memory_dataset = scipy.sparse.csr_matrix(temp)
             else:
-                print("i =",i)
-                print("self.in_memory_dataset.shape =",self.in_memory_dataset.shape)
+                #print("i =",i)
+                #print("self.in_memory_dataset.shape =",self.in_memory_dataset.shape)
                 temp = numpy.loadtxt(file_generator,delimiter=",")
                 temp = scipy.sparse.csr_matrix(temp)
-                print("temp.shape =",temp.shape)
+                #print("temp.shape =",temp.shape)
                 self.in_memory_dataset = scipy.sparse.vstack((self.in_memory_dataset,temp))
             file.close()
             gc.collect()

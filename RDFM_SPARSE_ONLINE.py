@@ -1,9 +1,9 @@
 import numpy
 import time
-import pre_process_sparse
+import pre_process_sparse_to_memory
 import factorization_machine_sparse
 from factorization_machine_sparse import FactorizationMachine
-from pre_process_sparse import DataProcessing
+from pre_process_sparse_to_memory import DataProcessing
 from metrics_sparse import evaluate
 import csv
 import random
