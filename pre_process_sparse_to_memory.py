@@ -37,7 +37,7 @@ class DataProcessing:
         self.index_for_target_column = header_line[0].index(target_column)
 
         self.indexes = list(range(1,int(total_lines)))
-        self.random_indexes = list(range(1,int(total_lines)))
+        self.random_indexes = list(range(0,int(total_lines-1)))
         #numpy.random.shuffle(self.indexes)
         random.shuffle(self.random_indexes)
         
@@ -59,12 +59,16 @@ class DataProcessing:
         return training_features,training_target,validation_features,validation_target,validation_indexes
     
     def features_and_target_from_indexes(self,indexes):
+        print("self.in_memory_dataset.shape = ",self.in_memory_dataset.shape)
         table_dense = self.in_memory_dataset[indexes].todense()
+        print("table_dense.shape = ",table_dense.shape)
         
         target = table_dense[:,self.index_for_target_column].copy()
         target = target.view(numpy.float64).reshape(target.size,1)  
     
-        features =  [[float(y) for y in x] for x in table_dense]
+        features = table_dense.copy()
+        #[[print(y) for y in x] for x in table_dense[1:2,1:5]]
+        #features =  [[float(y) for y in x] for x in table_dense]
         features = numpy.delete(features,-1,axis=1)
         
         features = numpy.clip(features,0.0, 1.0)    
@@ -78,34 +82,37 @@ class DataProcessing:
         
     def file_to_memory(self,segment_size):
         #TODO: CORRIGIR TAKE
-        segment_count = int(numpy.floor(len(self.indexes)/segment_size))
+        segment_count = int(numpy.ceil(len(self.indexes)/segment_size))
         self.in_memory_dataset = None     
 
         skip=0
         start_reading = time.time()
         #file = open(self.path,"rb")        
-        with open(self.path,"rb") as file: 
-            for i in range(segment_count):
-                #file = open(self.path,"rb")
-                skip = i*segment_size
-                print("self.indexes[skip:(skip+segment_size)] = ",self.indexes[skip:(skip+segment_size)])
-                file_generator = self.read_my_lines_sparse_numpy(file,self.indexes[skip:(skip+segment_size)])
-                
-                print("skip = ",skip)
-                print("take = ",(skip+segment_size))
-                if self.in_memory_dataset is None:        
-                    temp = numpy.loadtxt(file_generator,delimiter=",")
-                    self.in_memory_dataset = scipy.sparse.csr_matrix(temp)
-                else:
-                    print("i =",i)
-                    print("self.in_memory_dataset.shape =",self.in_memory_dataset.shape)
-                    temp = numpy.loadtxt(file_generator,delimiter=",")
-                    temp = scipy.sparse.csr_matrix(temp)
-                    print("temp.shape =",temp.shape)
-                    self.in_memory_dataset = scipy.sparse.vstack((self.in_memory_dataset,temp))
-                gc.collect()
+        #with open(self.path,"rb") as file: 
+        for i in range(segment_count):
+            file = open(self.path,"rb")
+            #file = open(self.path,"rb")
+            skip = i*segment_size
+            print("self.indexes[skip:(skip+segment_size)] = ",self.indexes[skip:(skip+segment_size)])
+            file_generator = self.read_my_lines_sparse_numpy(file,self.indexes[skip:(skip+segment_size)])
+            
+            print("skip = ",skip)
+            print("take = ",(skip+segment_size))
+            if self.in_memory_dataset is None:        
+                temp = numpy.loadtxt(file_generator,delimiter=",")
+                self.in_memory_dataset = scipy.sparse.csr_matrix(temp)
+            else:
+                print("i =",i)
+                print("self.in_memory_dataset.shape =",self.in_memory_dataset.shape)
+                temp = numpy.loadtxt(file_generator,delimiter=",")
+                temp = scipy.sparse.csr_matrix(temp)
+                print("temp.shape =",temp.shape)
+                self.in_memory_dataset = scipy.sparse.vstack((self.in_memory_dataset,temp))
+            file.close()
+            gc.collect()
         
-        file.close()    
+        file.close()
+        gc.collect()
 
     def read_my_lines(self,csv_reader, lines_list):
         # make sure every line number shows up only once:
@@ -129,11 +136,12 @@ class DataProcessing:
             lines_list.remove(0)
         
         for line_number, row in enumerate(file):
-            #if line_number == lines_list[0]:
+            if line_number == lines_list[0]:
+                #print(line_number)            
                 #yield [ float(i) for i in row ]
                 #print(row)
                 yield row#[ i for i in row ]
-             #   lines_list.pop(0)
+                lines_list.pop(0)
                 # Stop when the set is empty
                 if not lines_list:
                     break                                        

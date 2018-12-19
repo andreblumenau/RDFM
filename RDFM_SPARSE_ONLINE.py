@@ -43,7 +43,9 @@ data_handler = DataProcessing(
     path = '/floyd/input/movielens/movielens.csv',
     total_lines = dataset_size,
     delimiter_char = ",",
-    target_column = "Rating")
+    target_column = "Rating",
+    segment_size=1000
+)
     
 dataset_partition_size = int(numpy.floor((1000000-1)/(turns*number_of_instances)))
 print("dataset_partition_size =",dataset_partition_size)    
