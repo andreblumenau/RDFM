@@ -101,12 +101,13 @@ class FactorizationMachine:
 
             gc.collect()
 
-    def predict(self,validationX,validationY,error_buffer=5):
+    def predict(self,validationX,validationY,error_buffer=50):
         if self.crash_failed: return None
         
         rmse,error_by_index = evaluate(validationX,validationY,self.model,name=self.name)
         
         if error_buffer > error_by_index.shape[0]:
+            print("error_buffer > total errors, assumes error_buffer = ",error_by_index.shape[0])
             error_buffer = error_by_index.shape[0]
         
         self.smallest_error = error_by_index[0:error_buffer,1].astype(numpy.int32)
