@@ -90,6 +90,7 @@ class DataProcessing:
         #file = open(self.path,"rb")        
         #with open(self.path,"rb") as file: 
         for i in range(segment_count):
+            print("starting segment ",i,'from ',segment_count)
             file = open(self.path,"rb")
             #file = open(self.path,"rb")
             skip = i*segment_size

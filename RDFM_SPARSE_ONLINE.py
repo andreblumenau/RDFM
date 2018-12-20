@@ -12,11 +12,11 @@ from random import shuffle
 dataset_size = 1000000    
 sample_start = 0
 sample_end = 0
-turns = 10
+turns = 100
 number_of_instances = 6
-number_of_random_failed = 1
-number_of_crash_failed = 1
-number_of_malicious_failed = 1
+number_of_random_failed = 0
+number_of_crash_failed = 0
+number_of_malicious_failed = 0
 instance_list = []
 
 if (number_of_random_failed+number_of_crash_failed+number_of_malicious_failed) > number_of_instances:
@@ -44,7 +44,7 @@ data_handler = DataProcessing(
     total_lines = dataset_size,
     delimiter_char = ",",
     target_column = "Rating",
-    segment_size=1000
+    segment_size=10000
 )
     
 dataset_partition_size = int(numpy.floor((1000000-1)/(turns*number_of_instances)))
