@@ -20,7 +20,7 @@ number_of_malicious_failed = 0
 instance_list = []
 
 if (number_of_random_failed+number_of_crash_failed+number_of_malicious_failed) > number_of_instances:
-    raise ValueError("Number of unhealthy nodes cannnot sum to a number greater than the total number_of_instances")
+    raise ValueError("Number of unhealthy nodes cannnot sum to a number greater than the total number of instances")
 
 index_list = list(range(number_of_instances))
 random_failed_list = []
