@@ -125,9 +125,10 @@ class FactorizationMachine:
         
         boolean_array_of_is_none = [i is None for i in neighbourhood_models]
         
-        if True in boolean_array_of_is_none:
-            indexes_of_none = boolean_array_of_is_none.index(True)
-            neighbourhood_models = numpy.delete(neighbourhood_models,indexes_of_none)
+        while True in boolean_array_of_is_none:
+            index_of_none = boolean_array_of_is_none.index(True)
+            neighbourhood_models = numpy.delete(neighbourhood_models,index_of_none)
+            boolean_array_of_is_none = [i is None for i in neighbourhood_models]
     
         indexes = numpy.hstack((self.smallest_error,self.greatest_error))        
         features,target = data_handler.features_and_target_from_indexes(indexes)
