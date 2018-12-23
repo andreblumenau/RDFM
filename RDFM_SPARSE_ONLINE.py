@@ -15,7 +15,7 @@ sample_end = 0
 turns = 100
 number_of_instances = 6
 number_of_random_failed = 0
-number_of_crash_failed = 2
+number_of_crash_failed = 0
 number_of_malicious_failed = 0
 instance_list = []
 
@@ -81,7 +81,7 @@ sample_end = dataset_partition_size + correction_offset #This correction tends t
 
 print("About to start iterations through the dataset.")    
 start = time.time()   
-rmse_str = "None"
+rmse_str ="None"
 for i in range(turns):
 
     weight_matrices = []
@@ -109,7 +109,8 @@ for i in range(turns):
         
     for j in range(number_of_instances):
         #numpy.delete creates a new list without the instance_list[j] model (removes FM own model so it wont be considered 2 times)
-        instance_list[j].tardigrade(data_handler,numpy.delete(tardigrade_matrices,j,axis=0))
+        #instance_list[j].tardigrade(data_handler,numpy.delete(tardigrade_matrices,j,axis=0))
+        instance_list[j].tardigrade(data_handler,tardigrade_matrices)
 
 end = time.time()    
             

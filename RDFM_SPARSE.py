@@ -81,15 +81,17 @@ for i in range(number_of_instances):
 correction_offset = dataset_size - dataset_partition_size*turns*number_of_instances
 sample_end = dataset_partition_size + correction_offset
 
-rmse_str =""
 print("About to start iterations through the dataset.")    
-start = time.time()   
+start = time.time()
+rmse_str ="None"
 for i in range(turns):
 
     weight_matrices = []
 
     for j in range(number_of_instances):
+        rmse_str = "None"
         print("Turn: ",i,"Node: ",j)
+        
         if not instance_list[j].crash_failed:
             trainX,trainY,validationX,validationY,validation_indexes = data_handler.process_csv_data(lineStart = sample_start, lineEnd = sample_end)
             print("Successful read from dataset.")
@@ -106,11 +108,11 @@ for i in range(turns):
         sample_end = sample_end + dataset_partition_size
         
     tardigrade_matrices = numpy.array(weight_matrices)    
-    #print("tardigrade_matrices.shape",tardigrade_matrices.shape)
         
     for j in range(number_of_instances):
         #numpy.delete creates a new list without the instance_list[j] model (removes FM own model so it wont be considered 2 times)
-        instance_list[j].tardigrade(data_handler,numpy.delete(tardigrade_matrices,j,axis=0))
+        #instance_list[j].tardigrade(data_handler,numpy.delete(tardigrade_matrices,j,axis=0))
+        instance_list[j].tardigrade(data_handler,tardigrade_matrices)
 
 end = time.time()    
             
