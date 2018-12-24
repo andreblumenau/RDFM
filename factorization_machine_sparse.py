@@ -30,7 +30,7 @@ class FactorizationMachine:
             raise ValueError('"slice_size" parameter cannot be smaller than "batch_size" parameter.')
             
         if iteration_patience >= iterations:
-            raise ValueError('"iteration_patience" parameter cannot be smaller than "iterations" parameter.')                      
+            raise ValueError('"iteration_patience" parameter cannot be greater or equal to "iterations" parameter.')                      
 
         #"Private" properties
         self.model = None
