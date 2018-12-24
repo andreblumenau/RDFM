@@ -12,7 +12,7 @@ from random import shuffle
 dataset_size = 1000000    
 sample_start = 0
 sample_end = 0
-turns = 100
+turns = 1000
 number_of_instances = 6
 number_of_random_failed = 0
 number_of_crash_failed = 0
@@ -57,12 +57,12 @@ for i in range(number_of_instances):
     malicious_node  = i in malicious_failed
 
     factorization_machine = FactorizationMachine(
-        iterations                      = 25,#Per Batch
+        iterations                      = 5,#Per Batch
         learning_rate                   = 1/(100),
-        latent_vectors                  = 6,
+        latent_vectors                  = 10,
         regularization                  = 1/(1000),
         slice_size                      = dataset_partition_size, #15000,#RAM BUFFER FOR MATRICES
-        batch_size                      = 20,  #LEARNING MINI-BATCH-SIZE
+        batch_size                      = 10,  #LEARNING MINI-BATCH-SIZE
         slice_patience                  = 1,
         iteration_patience              = 5,
         slice_patience_threshold        = 0.000001,
@@ -94,7 +94,7 @@ for i in range(turns):
             trainX,trainY,validationX,validationY,validation_indexes = data_handler.process_csv_data(lineStart = sample_start, lineEnd = sample_end)
             print("Successful read from dataset.")
             instance_list[j].learn(trainX,trainY)
-            rmse = instance_list[j].predict(validationX,validationY)
+            rmse = instance_list[j].predict(validationX,validationY,error_buffer=25)
             rmse_str = str(numpy.round(rmse,5))
             
         print('{"metric": "RMSE '+instance_list[j].name+'", "value": '+rmse_str+'}')
@@ -110,7 +110,7 @@ for i in range(turns):
     for j in range(number_of_instances):
         #numpy.delete creates a new list without the instance_list[j] model (removes FM own model so it wont be considered 2 times)
         #instance_list[j].tardigrade(data_handler,numpy.delete(tardigrade_matrices,j,axis=0))
-        instance_list[j].tardigrade(data_handler,tardigrade_matrices)
+        instance_list[j].tardigrade(data_handler,tardigrade_matrices,)
 
 end = time.time()    
             
