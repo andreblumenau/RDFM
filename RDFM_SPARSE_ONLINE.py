@@ -12,7 +12,7 @@ from random import shuffle
 dataset_size = 1000000    
 sample_start = 0
 sample_end = 0
-turns = 1000
+turns = 100
 number_of_instances = 6
 number_of_random_failed = 0
 number_of_crash_failed = 0
@@ -58,7 +58,7 @@ for i in range(number_of_instances):
 
     factorization_machine = FactorizationMachine(
         iterations                      = 5,#Per Batch
-        learning_rate                   = 1/(100),
+        learning_rate                   = 1/(1000),
         latent_vectors                  = 10,
         regularization                  = 1/(1000),
         slice_size                      = dataset_partition_size, #15000,#RAM BUFFER FOR MATRICES
@@ -105,7 +105,7 @@ for i in range(turns):
         sample_start = sample_start + dataset_partition_size
         sample_end = sample_end + dataset_partition_size
         
-    tardigrade_matrices = numpy.array(weight_matrices)    
+    tardigrade_matrices = numpy.array(weight_matrices,top_n_models = 4)    
         
     for j in range(number_of_instances):
         #numpy.delete creates a new list without the instance_list[j] model (removes FM own model so it wont be considered 2 times)

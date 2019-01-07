@@ -116,7 +116,7 @@ class FactorizationMachine:
         
         return rmse
             
-    def tardigrade(self,data_handler,neighbourhood_models,top_n_models = 5):
+    def tardigrade(self,data_handler,neighbourhood_models,top_n_models = 4):
         if self.crash_failed: return
         if self.malicious_failed: return
         if self.random_failed: return
