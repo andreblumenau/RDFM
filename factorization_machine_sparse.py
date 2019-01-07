@@ -142,6 +142,8 @@ class FactorizationMachine:
         tensor = numpy.tile(0,(1,self.model.shape[0],self.model.shape[1]))
         tensor[0] = self.model
         neighbourhood_models = neighbourhood_models[index_and_rmse[0:max(index_and_rmse.shape[0],top_n_models),1]]
+        #TARDIGRADE OFF
+        #neighbourhood_models = neighbourhood_models[index_and_rmse[0:index_and_rmse.shape[0],1]]
         
         self.model = (neighbourhood_models).sum(0)/len(neighbourhood_models)
         return

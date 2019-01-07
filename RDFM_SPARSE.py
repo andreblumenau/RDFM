@@ -11,13 +11,21 @@ import csv
 import random
 from random import shuffle
 
+import os
+import sys
+os.chdir("C:\RDFM\LOGS")
+orig_stdout = sys.stdout
+theFile = open('RDFM_SPARSE_OUT.txt', 'w')
+sys.stdout = theFile
+
+
 dataset_size = 999    
 sample_start = 0
 sample_end = 0
 turns = 6
 number_of_instances = 6
-number_of_random_failed = 0
-number_of_crash_failed = 2
+number_of_random_failed = 2
+number_of_crash_failed = 0
 number_of_malicious_failed = 0
 instance_list = []
 
@@ -62,7 +70,7 @@ for i in range(number_of_instances):
 
     factorization_machine = FactorizationMachine(
         iterations                      = 20,
-        learning_rate                   = 1/(100),
+        learning_rate                   = 1/(1000),
         latent_vectors                  = 5,
         regularization                  = 1/(1000),
         slice_size                      = 83,
@@ -119,4 +127,9 @@ end = time.time()
 
 print(int((end - start)/60)," Minutes")
 print((((end - start)/60)-int((end - start)/60))*60," Seconds")
+
+
+sys.stdout = orig_stdout
+theFile.close()
+
 winsound.PlaySound("C:\\Users\\AndréRodrigo\\Downloads\\LTTP\\LTTP_Get_HeartPiece_StereoR.wav", winsound.SND_FILENAME)
