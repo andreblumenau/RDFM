@@ -63,7 +63,7 @@ for i in range(number_of_instances):
         regularization                  = 1/(1000),
         slice_size                      = dataset_partition_size, #15000,#RAM BUFFER FOR MATRICES
         batch_size                      = 10,  #LEARNING MINI-BATCH-SIZE
-        slice_patience                  = 2,
+        slice_patience                  = 1,
         iteration_patience              = 4,
         slice_patience_threshold        = 0.000001,
         iteration_patience_threshold    = 0.00001,
@@ -105,12 +105,12 @@ for i in range(turns):
         sample_start = sample_start + dataset_partition_size
         sample_end = sample_end + dataset_partition_size
         
-    tardigrade_matrices = numpy.array(weight_matrices,top_n_models = 4)    
+    tardigrade_matrices = numpy.array(weight_matrices)    
         
     for j in range(number_of_instances):
         #numpy.delete creates a new list without the instance_list[j] model (removes FM own model so it wont be considered 2 times)
         #instance_list[j].tardigrade(data_handler,numpy.delete(tardigrade_matrices,j,axis=0))
-        instance_list[j].tardigrade(data_handler,tardigrade_matrices,)
+        instance_list[j].tardigrade(data_handler,tardigrade_matrices,top_n_models = 4)
 
 end = time.time()    
             
