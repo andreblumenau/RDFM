@@ -105,7 +105,7 @@ for i in range(turns):
         sample_start = sample_start + dataset_partition_size
         sample_end = sample_end + dataset_partition_size
         
-    tardigrade_matrices = numpy.array(weight_matrices)    
+    tardigrade_matrices = numpy.array(weight_matrices,top_n_models = 4)    
         
     for j in range(number_of_instances):
         #numpy.delete creates a new list without the instance_list[j] model (removes FM own model so it wont be considered 2 times)
