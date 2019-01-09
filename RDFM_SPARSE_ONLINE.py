@@ -57,12 +57,12 @@ for i in range(number_of_instances):
     malicious_node  = i in malicious_failed
 
     factorization_machine = FactorizationMachine(
-        iterations                      = 5,#Per Batch
+        iterations                      = 20,#Per Batch
         learning_rate                   = 1/(1000),
         latent_vectors                  = 10,
         regularization                  = 1/(1000),
-        slice_size                      = dataset_partition_size, #15000,#RAM BUFFER FOR MATRICES
-        batch_size                      = 10,  #LEARNING MINI-BATCH-SIZE
+        slice_size                      = dataset_partition_size, #RAM BUFFER FOR MATRICES
+        batch_size                      = 10,                     #LEARNING MINI-BATCH-SIZE
         slice_patience                  = 1,
         iteration_patience              = 4,
         slice_patience_threshold        = 0.000001,

@@ -75,7 +75,9 @@ class FactorizationMachine:
         if self.slice_patience > slice_count:
             print("slice_count = ",slice_count)
             print("slice_patience = ",self.slice_patience)
-            raise ValueError('"slice_count" parameter cannot be smaller than "slice_patience" parameter.')            
+            print('"slice_count" parameter cannot be smaller than "slice_patience" parameter.')
+            print("Using slice_patience = slice_count.")
+            self.slice_patience = slice_count
         
         if self.model is None:
             self.model = self.get_random_weight_matrix(trainX.shape[1],self.latent_vectors)
