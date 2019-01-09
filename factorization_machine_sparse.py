@@ -82,7 +82,7 @@ class FactorizationMachine:
         if self.model is None:
             self.model = self.get_random_weight_matrix(trainX.shape[1],self.latent_vectors)
             
-        for j in range(slice_count):#(slice_count):        
+        for j in range(slice_count):        
             skip = j*self.slice_size    
             end = ((j+1)*self.slice_size)      
             self.model,iteration_error,error_iter_array = self.optimization_routine.optimize( 
