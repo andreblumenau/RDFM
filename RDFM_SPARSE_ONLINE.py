@@ -58,7 +58,7 @@ for i in range(number_of_instances):
 
     factorization_machine = FactorizationMachine(
         iterations                      = 5,#Per Batch
-        learning_rate                   = 1/(1000),
+        learning_rate                   = 1/(10000),
         latent_vectors                  = 10,
         regularization                  = 1/(10000),
         slice_size                      = dataset_partition_size, #RAM BUFFER FOR MATRICES
