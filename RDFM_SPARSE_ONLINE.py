@@ -57,8 +57,8 @@ for i in range(number_of_instances):
     malicious_node  = i in malicious_failed
 
     factorization_machine = FactorizationMachine(
-        iterations                      = 5,#Per Batch
-        learning_rate                   = 1/(10000),
+        iterations                      = 20,#Per Batch
+        learning_rate                   = 1/(1000),
         latent_vectors                  = 10,
         regularization                  = 1/(10000),
         slice_size                      = dataset_partition_size, #RAM BUFFER FOR MATRICES
@@ -105,7 +105,7 @@ for i in range(turns):
         sample_start = sample_start + dataset_partition_size
         sample_end = sample_end + dataset_partition_size
         
-    tardigrade_matrices = numpy.array(weight_matrices,top_n_models = 4)    
+    tardigrade_matrices = numpy.array(weight_matrices)    
         
     for j in range(number_of_instances):
         #numpy.delete creates a new list without the instance_list[j] model (removes FM own model so it wont be considered 2 times)
