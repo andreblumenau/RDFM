@@ -57,7 +57,7 @@ for i in range(number_of_instances):
     malicious_node  = i in malicious_failed
 
     factorization_machine = FactorizationMachine(
-        iterations                      = 20,#Per Batch
+        iterations                      = 5,#Per Batch
         learning_rate                   = 1/(1000),
         latent_vectors                  = 10,
         regularization                  = 1/(10000),
