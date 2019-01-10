@@ -12,7 +12,7 @@ from random import shuffle
 dataset_size = 1000000    
 sample_start = 0
 sample_end = 0
-turns = 1200
+turns = 100
 number_of_instances = 6
 number_of_random_failed = 0
 number_of_crash_failed = 0
@@ -57,10 +57,10 @@ for i in range(number_of_instances):
     malicious_node  = i in malicious_failed
 
     factorization_machine = FactorizationMachine(
-        iterations                      = 5,#Per Batch
-        learning_rate                   = 1/(1000),
+        iterations                      = 3,#Per Batch
+        learning_rate                   = 1/(10000),
         latent_vectors                  = 10,
-        regularization                  = 1/(10000),
+        regularization                  = 1/(100000),
         slice_size                      = dataset_partition_size, #RAM BUFFER FOR MATRICES
         batch_size                      = 10,                     #LEARNING MINI-BATCH-SIZE
         slice_patience                  = 1,
