@@ -12,7 +12,7 @@ from random import shuffle
 dataset_size = 1000000    
 sample_start = 0
 sample_end = 0
-turns = 100
+turns = 1200
 number_of_instances = 6
 number_of_random_failed = 0
 number_of_crash_failed = 0
