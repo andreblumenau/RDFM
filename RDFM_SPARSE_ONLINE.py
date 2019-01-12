@@ -65,8 +65,8 @@ for i in range(number_of_instances):
         batch_size                      = 10,                     #LEARNING MINI-BATCH-SIZE
         slice_patience                  = 1,
         iteration_patience              = 1,
-        slice_patience_threshold        = 0.000001,
-        iteration_patience_threshold    = 0.00001,
+        slice_patience_threshold        = 0.0000001,
+        iteration_patience_threshold    = 0.000001,
         #slice_patience_threshold        = 0.0000001,
         #iteration_patience_threshold    = 0.0000001,
         name                            = str(i),
