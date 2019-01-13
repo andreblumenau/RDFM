@@ -15,8 +15,8 @@ sample_end = 0
 turns = 100
 number_of_instances = 6
 number_of_random_failed = 0
-number_of_crash_failed = 4
-number_of_malicious_failed = 0
+number_of_crash_failed = 0
+number_of_malicious_failed = 4
 instance_list = []
 
 if (number_of_random_failed+number_of_crash_failed+number_of_malicious_failed) > number_of_instances:
