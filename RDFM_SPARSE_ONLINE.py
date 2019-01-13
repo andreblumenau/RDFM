@@ -15,8 +15,8 @@ sample_end = 0
 turns = 100
 number_of_instances = 6
 number_of_random_failed = 0
-number_of_crash_failed = 4
-number_of_malicious_failed = 0
+number_of_crash_failed = 0
+number_of_malicious_failed = 4
 instance_list = []
 
 if (number_of_random_failed+number_of_crash_failed+number_of_malicious_failed) > number_of_instances:
@@ -110,7 +110,7 @@ for i in range(turns):
     for j in range(number_of_instances):
         #numpy.delete creates a new list without the instance_list[j] model (removes FM own model so it wont be considered 2 times)
         #instance_list[j].tardigrade(data_handler,numpy.delete(tardigrade_matrices,j,axis=0))
-        instance_list[j].tardigrade(data_handler,tardigrade_matrices,top_n_models = 2)
+        instance_list[j].tardigrade(data_handler,tardigrade_matrices,top_n_models = 4)
 
 end = time.time()    
             
