@@ -134,17 +134,20 @@ class FactorizationMachine:
     
         indexes = numpy.hstack((self.smallest_error,self.greatest_error))        
         features,target = data_handler.features_and_target_from_indexes(indexes)
-        index_and_rmse = numpy.tile(1,(neighbourhood_models.shape[0],2))
+        index_and_rmse = numpy.tile(0.0,(neighbourhood_models.shape[0],2))
         
         for i in range(neighbourhood_models.shape[0]):
             index_and_rmse[i][1] = i
             index_and_rmse[i][0] = evaluate_rmse(features,target,neighbourhood_models[i])
         
-        index_and_rmse = index_and_rmse[index_and_rmse[:,0].argsort()]
+        index_and_rmse = index_and_rmse[index_and_rmse[:,0].argsort().astype(numpy.int8)]
+        print("index_and_rmse","\n",index_and_rmse)
         tensor = numpy.tile(0,(1,self.model.shape[0],self.model.shape[1]))
         tensor[0] = self.model
-        neighbourhood_models = neighbourhood_models[index_and_rmse[0:max(index_and_rmse.shape[0],top_n_models),1]]
+        #TARDIGRADE ON
+        neighbourhood_models = neighbourhood_models[index_and_rmse[0:top_n_models,1].astype(numpy.int8)]
         #TARDIGRADE OFF
+        #neighbourhood_models = neighbourhood_models[index_and_rmse[0:max(index_and_rmse.shape[0],top_n_models),1]]
         #neighbourhood_models = neighbourhood_models[index_and_rmse[0:index_and_rmse.shape[0],1]]
         
         self.model = (neighbourhood_models).sum(0)/len(neighbourhood_models)
