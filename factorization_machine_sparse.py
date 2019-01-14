@@ -141,7 +141,7 @@ class FactorizationMachine:
             index_and_rmse[i][0] = evaluate_rmse(features,target,neighbourhood_models[i])
         
         index_and_rmse = index_and_rmse[index_and_rmse[:,0].argsort().astype(numpy.int8)]
-        print("index_and_rmse","\n",index_and_rmse)
+        #print("index_and_rmse","\n",index_and_rmse)
         tensor = numpy.tile(0,(1,self.model.shape[0],self.model.shape[1]))
         tensor[0] = self.model
         #TARDIGRADE ON
